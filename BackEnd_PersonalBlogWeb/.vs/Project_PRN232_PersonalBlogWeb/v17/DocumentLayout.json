@@ -1,0 +1,153 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|e:\\fpt_su25\\prn232\\code\\project\\project_prn232_personalblogweb\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|e:\\fpt_su25\\prn232\\code\\project\\project_prn232_personalblogweb\\dao\\postdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|solutionrelative:dao\\postdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|e:\\fpt_su25\\prn232\\code\\project\\project_prn232_personalblogweb\\controllers\\postscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|solutionrelative:controllers\\postscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|e:\\fpt_su25\\prn232\\code\\project\\project_prn232_personalblogweb\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|e:\\fpt_su25\\prn232\\code\\project\\project_prn232_personalblogweb\\dto\\postdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{18CDC7ED-2095-46CA-BF8E-CD361AE4835F}|Project_PRN232_PersonalBlogWeb.csproj|solutionrelative:dto\\postdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-18T21:14:27.427Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PostDto.cs",
+              "DocumentMoniker": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\DTO\\PostDto.cs",
+              "RelativeDocumentMoniker": "DTO\\PostDto.cs",
+              "ToolTip": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\DTO\\PostDto.cs",
+              "RelativeToolTip": "DTO\\PostDto.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-16T18:25:29.138Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PostDAO.cs",
+              "DocumentMoniker": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\DAO\\PostDAO.cs",
+              "RelativeDocumentMoniker": "DAO\\PostDAO.cs",
+              "ToolTip": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\DAO\\PostDAO.cs",
+              "RelativeToolTip": "DAO\\PostDAO.cs",
+              "ViewState": "AQIAAMYAAAAAAAAAAAAwwNMAAABMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-16T18:24:46.427Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PostsController.cs",
+              "DocumentMoniker": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\Controllers\\PostsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PostsController.cs",
+              "ToolTip": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\Controllers\\PostsController.cs",
+              "RelativeToolTip": "Controllers\\PostsController.cs",
+              "ViewState": "AQIAACkAAAAAAAAAAAAIwFIAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-10T17:56:55.95Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "E:\\FPT_SU25\\PRN232\\code\\Project\\Project_PRN232_PersonalBlogWeb\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-10T17:44:23.05Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 270,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:3:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:4:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:5:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:6:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 523,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{a80febb4-e7e0-4147-b476-21aaf2453969}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

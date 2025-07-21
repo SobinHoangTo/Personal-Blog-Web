@@ -1,0 +1,127 @@
+##################################
+# 🧠 COMMON IGNORE FOR ALL PROJECTS
+##################################
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+node_modules/
+.env
+.env.*
+
+
+############################
+# 🧩 BACKEND - ASP.NET Core
+############################
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build results
+bin/
+obj/
+out/
+
+## Rider
+.idea/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## Visual Studio Code
+.vscode/
+
+## Publish folders
+wwwroot/
+.publish/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+
+## Secrets
+secrets.json
+
+## EF Core migrations (if you generate them outside version control)
+#migrations/
+
+#############################
+# 🧩 FRONTEND - ReactJS + Next.js + TypeScript
+#############################
+
+# Dependency directories
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDEs
+.idea/
+.vscode/
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test coverage
+coverage/
+
+# Mac system files
+.DS_Store
+
+# Next.js build cache
+.next/cache/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Lint cache
+.eslintcache
+
+# Optional npm cache
+.npm/
+
+# Optional Yarn cache
+.yarn/cache
+
+# Firebase (if any)
+.firebase/
+
+#############################
+# 🔒 Security
+#############################
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+*.cer
+
+# Sensitive configuration files
+appsettings.json
