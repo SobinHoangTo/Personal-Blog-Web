@@ -239,6 +239,7 @@ export default function PostList() {
                     coverImage={post.coverImage || "/blog_background.jpg"}
                     categoryName={post.categoryName}
                     createdDate={post.createdDate}
+                    authorID={post.authorID}
                     authorName={post.authorName}
                     authorAvatar={post.authorAvatar}
                     likeCount={post.likeCount}

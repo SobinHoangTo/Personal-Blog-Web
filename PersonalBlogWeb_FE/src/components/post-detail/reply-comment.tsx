@@ -7,12 +7,14 @@ import { useAuth } from "@/components/context/AuthContext";
 import { createCommentAuth } from "@/lib/api";
 import { Comment } from "@/components/types/comment";
 
-interface NewCommentProps {
+interface ReplyCommentProps {
   readonly postId: number;
-  readonly onCommentAdded: (comment: Comment) => void;
+  readonly parentCommentId: number;
+  readonly onReplyAdded: (reply: Comment) => void;
+  readonly onCancel: () => void;
 }
 
-export function NewComment({ postId, onCommentAdded }: NewCommentProps) {
+export function ReplyComment({ postId, parentCommentId, onReplyAdded, onCancel }: ReplyCommentProps) {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -24,35 +26,36 @@ export function NewComment({ postId, onCommentAdded }: NewCommentProps) {
 
     try {
       setLoading(true);
-      const newComment = await createCommentAuth(postId, content);
+      const newReply = await createCommentAuth(postId, content, parentCommentId);
       
-      // Create a comment object to update the UI
-      const commentForUI: Comment = {
-        id: newComment.id,
+      // Create a reply object to update the UI
+      const replyForUI: Comment = {
+        id: newReply.id,
         content,
         authorId: user?.id || 0,
         authorName: user?.username || "Unknown",
         authorAvatar: user?.avatar || `/image/avatar${(user?.id || 1) % 3 + 1}.jpg`,
         createdDate: new Date().toISOString(),
-        parentCommentId: undefined,
+        parentCommentId,
         replies: [],
         likeCount: 0,
         isLiked: false
       };
       
-      onCommentAdded(commentForUI);
+      onReplyAdded(replyForUI);
       setContent("");
+      onCancel(); // Close the reply form after successful submission
     } catch (error) {
-      console.error("Error posting comment:", error);
-      alert("Failed to post comment. Please try again.");
+      console.error("Error posting reply:", error);
+      alert("Failed to post reply. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div className="flex !items-center gap-4">
+    <div className="mt-4 ml-14 p-4 bg-gray-50 rounded-lg">
+      <div className="flex !items-center gap-4 mb-4">
         <div className=" !m-0 h-full  w-full  max-h-[40px] max-w-[40px] ">
           <Image
             width={768}
@@ -69,27 +72,40 @@ export function NewComment({ postId, onCommentAdded }: NewCommentProps) {
           {user?.username || "User"}
         </Typography>
       </div>
-      <div className="flex-col mt-4 pl-14 h-full">
-        <form onSubmit={handleSubmit} className="flex flex-col items-end">
-          <Textarea
-            label="Your Comment"
-            variant="static"
-            placeholder="Write a nice comment..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+      
+      <form onSubmit={handleSubmit} className="flex flex-col items-end">
+        <Textarea
+          label="Your Reply"
+          variant="static"
+          placeholder="Write your reply..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          disabled={loading}
+          size="md"
+        />
+        <div className="flex gap-2 mt-4">
+          <Button 
+            type="button"
+            variant="text"
+            color="gray" 
+            size="sm"
+            onClick={onCancel}
             disabled={loading}
-          />
+          >
+            Cancel
+          </Button>
           <Button 
             type="submit"
-            color="gray" 
-            className="mt-4" 
-            size="md"
+            color="blue" 
+            size="sm"
             disabled={loading || !content.trim()}
           >
-            {loading ? "Posting..." : "Send"}
+            {loading ? "Posting..." : "Reply"}
           </Button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
+
+export default ReplyComment;

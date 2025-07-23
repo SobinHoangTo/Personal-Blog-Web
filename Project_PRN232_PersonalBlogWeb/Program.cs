@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -27,7 +26,7 @@ namespace Project_PRN232_PersonalBlogWeb
 				.AddJsonFile("appsettings.json", true, true)
 				.Build();
 
-			var Jwt = configuration.GetSection("Jwt");
+			var jwtSettings = configuration.GetSection("JwtSettings");
 
 			// ============================================
 			// Add Services
@@ -42,30 +41,6 @@ namespace Project_PRN232_PersonalBlogWeb
 
 			builder.Services.AddDbContext<PersonalBlogWebContext>(options =>
 				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-			// Add CORS
-			// builder.Services.AddCors(options =>
-			// {
-			// 	options.AddPolicy("AllowLocalhost", builder =>
-			// 	{
-			// 		builder
-			// 			.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://127.0.0.1:3000")
-			// 			.AllowAnyMethod()
-			// 			.AllowAnyHeader()
-			// 			.AllowCredentials();
-			// 	});
-			// });
-			builder.Services.AddCors(options =>
-			{
-				options.AddDefaultPolicy(policy =>
-				{
-					policy.AllowAnyOrigin()
-						  .AllowAnyHeader()
-						  .AllowAnyMethod();
-				});
-			});
-
-
 
 			// Register DAOs
 			builder.Services.AddScoped<PostDAO>();
@@ -86,11 +61,9 @@ namespace Project_PRN232_PersonalBlogWeb
 			// Authentication: JWT + Google
 			builder.Services.AddAuthentication(options =>
 			{
-				// Set JWT as default for API endpoints
 				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-				// Use Cookies for sign-in operations (Google OAuth)
-				options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 			})
 			.AddJwtBearer(options =>
 			{
@@ -101,9 +74,9 @@ namespace Project_PRN232_PersonalBlogWeb
 					ValidateAudience = true,
 					ValidateLifetime = true,
 					ValidateIssuerSigningKey = true,
-					ValidIssuer = Jwt["Issuer"],
-					ValidAudience = Jwt["Audience"],
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Jwt["SecretKey"]))
+					ValidIssuer = jwtSettings["Issuer"],
+					ValidAudience = jwtSettings["Audience"],
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
 				};
 			})
 			.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -112,14 +85,7 @@ namespace Project_PRN232_PersonalBlogWeb
 				options.ClientId = configuration["GoogleKeys:ClientId"];
 				options.ClientSecret = configuration["GoogleKeys:ClientSecret"];
 				options.CallbackPath = "/signin-google";
-
-				// Add scopes to get profile picture
-				options.Scope.Add("profile");
-				options.Scope.Add("email");
-
-				// Save additional user information
-				options.SaveTokens = true;
-			});
+			});	
 
 			// ============================================
 			// Swagger + JWT Config
@@ -195,8 +161,6 @@ namespace Project_PRN232_PersonalBlogWeb
 			app.UseHttpsRedirection();
 			app.UseRouting();
 
-			app.UseCors(); // trước app.UseAuthorization();
-			app.UseSession(); // Add session middleware for cookies
 			app.UseAuthentication();
 			app.UseAuthorization();
 

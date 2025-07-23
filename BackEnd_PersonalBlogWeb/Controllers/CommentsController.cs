@@ -37,15 +37,16 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		[HttpGet("post/{postId}")]
 		public async Task<IActionResult> GetCommentsByPostId(int postId)
 		{
-			var comments = await _commentDao.GetCommentsByPostIdAsync(postId);
+			// Get current user ID if authenticated
+			int? currentUserId = CurrentUserId;
+
+			var comments = await _commentDao.GetCommentsByPostIdAsync(postId, currentUserId);
 			if (comments == null || !comments.Any())
 			{
 				return NotFound(new { message = "No comments found for this post." });
 			}
 			return Ok(comments);
-		}
-
-		// POST: api/Comment
+		}       // POST: api/Comment
 		[HttpPost]
 		[Authorize]
 		public async Task<IActionResult> AddComment([FromBody] CreateCommentDto dto)

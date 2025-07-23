@@ -22,10 +22,12 @@ export type Post = {
   coverImage?: string;
   createdDate: string;
   categoryName: string;
+  authorID: number;
   authorName: string;
   authorAvatar: string;
   likeCount: number;
   commentCount: number;
+  isLiked?: boolean;
 };
 
 export type BlogPostCardProps = {
@@ -34,11 +36,13 @@ export type BlogPostCardProps = {
   categoryName: string;
   title: string;
   content: string;
+  authorID: number;
   authorName: string;
   authorAvatar: string;
   createdDate: string;
   likeCount?: number;
   commentCount?: number;
+  isLiked?: boolean;
 };
 
 export type PostDetailProps = {

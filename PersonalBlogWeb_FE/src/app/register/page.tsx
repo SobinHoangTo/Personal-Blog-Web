@@ -15,6 +15,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { registerUser } from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import GoogleLoginButton from "@/components/auth/google-login-button";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -251,6 +252,18 @@ export default function RegisterPage() {
                 )}
               </Button>
             </form>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 mt-6">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <Typography variant="small" color="gray">or</Typography>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+
+            {/* Google Login Button */}
+            <div className="mt-4">
+              <GoogleLoginButton fullWidth disabled={loading} />
+            </div>
 
             <Typography color="gray" className="mt-4 text-center font-normal">
               Already have an account?{" "}

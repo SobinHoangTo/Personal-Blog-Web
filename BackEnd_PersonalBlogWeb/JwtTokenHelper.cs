@@ -33,7 +33,10 @@ namespace Project_PRN232_PersonalBlogWeb.Helpers
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				new Claim(ClaimTypes.Name, user.Username ?? string.Empty),
-				new Claim(ClaimTypes.Role, user.Role?.ToString() ?? "0")
+				new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+				new Claim(ClaimTypes.GivenName, user.FullName ?? string.Empty),
+				new Claim(ClaimTypes.Role, user.Role?.ToString() ?? "0"),
+				new Claim("avatar", user.Avatar ?? string.Empty)
 			};
 
 			var token = new JwtSecurityToken(
