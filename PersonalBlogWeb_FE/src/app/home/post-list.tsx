@@ -15,13 +15,9 @@ import {
   getAllPosts,
   getPostsByCategory,
   getAllCategories,
-  Post,
 } from "@/lib/api";
-
-interface Category {
-  id: number;
-  name: string;
-}
+import { Post } from "@/components/types/post";
+import { Category } from "@/components/types/category";
 
 export default function PostList() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -237,9 +233,10 @@ export default function PostList() {
                 {posts.map((post) => (
                   <BlogPostCard
                     key={post?.id}
+                    id={post.id}
                     title={post.title}
                     content={post.content}
-                    thumbnail={post.coverImage || "/blog_background.jpg"}
+                    coverImage={post.coverImage || "/blog_background.jpg"}
                     categoryName={post.categoryName}
                     createdDate={post.createdDate}
                     authorName={post.authorName}

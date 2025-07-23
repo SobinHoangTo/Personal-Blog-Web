@@ -25,12 +25,12 @@ export function NewComment() {
         <form action="#" className="flex flex-col items-end">
           {/* @ts-ignore */}
           <Textarea
-            label="Your Message"
+            label="Your Comment"
             variant="static"
             placeholder="Write a nice reply or go home..."
           />
           <Button color="gray" className="mt-4" size="md">
-            button
+            Send
           </Button>
         </form>
       </div>

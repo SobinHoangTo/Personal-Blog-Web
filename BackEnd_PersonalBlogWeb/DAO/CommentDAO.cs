@@ -27,7 +27,8 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 				Content = c.Content,
 				AuthorId = c.UserId,
 				AuthorName = c.User.FullName,
-				CreatedDate = DateTime.Now, // Nếu bạn thêm trường CreatedDate sau, hãy sửa dòng này
+				AuthorAvatar = c.User.Avatar ?? string.Empty,
+				CreatedDate = DateTime.Now,
 				ParentCommentId = c.ParentCommentId,
 				Replies = new List<CommentDto>()
 			}).ToList();

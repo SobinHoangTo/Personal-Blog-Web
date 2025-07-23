@@ -19,14 +19,21 @@ namespace Project_PRN232_PersonalBlogWeb.Helpers
 		public string GenerateToken(User user)
 		{
 			var Jwt = _configuration.GetSection("Jwt");
-			var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Jwt["Jwt"]));
+			var secretKeyValue = Jwt["SecretKey"];
+
+			if (string.IsNullOrEmpty(secretKeyValue))
+			{
+				throw new InvalidOperationException("JWT SecretKey is not configured in appsettings.json");
+			}
+
+			var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKeyValue));
 			var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
 			var claims = new[]
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-				new Claim(ClaimTypes.Name, user.Username),
-				new Claim(ClaimTypes.Role, user.Role.ToString())
+				new Claim(ClaimTypes.Name, user.Username ?? string.Empty),
+				new Claim(ClaimTypes.Role, user.Role?.ToString() ?? "0")
 			};
 
 			var token = new JwtSecurityToken(

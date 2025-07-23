@@ -46,6 +46,10 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			{
 				Role = role,
 				UserId = userId,
+				Email = user.Email,
+				FullName = user.FullName,
+				Username = user.Username,
+				Avatar = user.Avatar,
 				AccessToken = token,
 				ExpiresIn = (int)TimeSpan.FromMinutes(Convert.ToDouble(_config["Jwt:ExpirationMinutes"])).TotalSeconds
 			});
