@@ -22,6 +22,7 @@ export async function getAllPosts(): Promise<Post[]> {
     categoryName: p.categoryName,
     likeCount: p.likeCount,
     commentCount: p.commentCount,
+    authorID: p.authorID,
     authorName: p.authorName,
     authorAvatar: p.authorAvatar,
   }));
@@ -168,6 +169,173 @@ export async function registerUser(userData: any) {
     return await res.json();
   } catch (error) {
     console.error("Error registering:", error);
+    throw error;
+  }
+}
+
+// Google OAuth login
+export function initiateGoogleLogin() {
+  // Redirect to backend Google login endpoint
+  window.location.href = `${BASE_URL}/Users/google-login`;
+}
+
+// User API functions
+export async function getUserById(userId: number) {
+  try {
+    const res = await fetch(`${BASE_URL}/Users/${userId}`);
+    if (!res.ok) throw new Error("Failed to fetch user");
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+}
+
+export async function getUserPosts(authorId: number) {
+  try {
+    const res = await fetch(`${BASE_URL}/Posts/author/${authorId}`);
+    if (!res.ok) throw new Error("Failed to fetch user posts");
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    return [];
+  }
+}
+
+// Enhanced comment functions with authentication
+export async function createCommentAuth(
+  postId: number,
+  content: string,
+  parentCommentId?: number
+) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const res = await fetch(`${BASE_URL}/Comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        postId,
+        content,
+        parentCommentId,
+      }),
+    });
+    if (!res.ok) throw new Error("Failed to create comment");
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    throw error;
+  }
+}
+
+export async function likeComment(commentId: number) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const res = await fetch(`${BASE_URL}/Like`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        commentId: commentId,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Like comment error response:", errorText);
+      throw new Error(`Failed to like comment: ${errorText}`);
+    }
+
+    const result = await res.json();
+    console.log("Like comment response:", result);
+    return result;
+  } catch (error) {
+    console.error("Error liking comment:", error);
+    throw error;
+  }
+}
+
+// Like/Unlike Post
+export async function likePost(postId: number) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const res = await fetch(`${BASE_URL}/Like`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        postId: postId,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Like post error response:", errorText);
+      throw new Error(`Failed to like post: ${errorText}`);
+    }
+
+    const result = await res.json();
+    console.log("Like post response:", result);
+    return result;
+  } catch (error) {
+    console.error("Error liking post:", error);
+    throw error;
+  }
+}
+
+// Update Comment
+export async function updateComment(commentId: number, content: string) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const res = await fetch(`${BASE_URL}/Comment`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        commentId: commentId,
+        content: content,
+      }),
+    });
+    if (!res.ok) throw new Error("Failed to update comment");
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating comment:", error);
+    throw error;
+  }
+}
+
+// Delete Comment
+export async function deleteComment(commentId: number) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authentication required");
+
+    const res = await fetch(`${BASE_URL}/Comment/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) throw new Error("Failed to delete comment");
+    return true;
+  } catch (error) {
+    console.error("Error deleting comment:", error);
     throw error;
   }
 }

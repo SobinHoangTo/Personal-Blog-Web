@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Typography,
@@ -10,9 +10,11 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 import { HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { BlogPostCardProps } from "../types/post";
-import { getPostById } from "@/lib/api";
+import { likePost } from "@/lib/api";
+import { useAuth } from "@/components/context/AuthContext";
 
 
 function stripHtmlTags(html: string): string {
@@ -35,6 +37,7 @@ export function BlogPostCard({
   categoryName,
   title,
   content,
+  authorID,
   authorName,
   authorAvatar,
   createdDate,
@@ -43,17 +46,36 @@ export function BlogPostCard({
 }: Readonly<BlogPostCardProps>) {
   const plainText = stripHtmlTags(content || "");
   const shortText = plainText.length > 250 ? plainText.slice(0, 250) + "..." : plainText;
+  const { isAuthenticated } = useAuth();
+  
+  const [isLiked, setIsLiked] = useState(false);
+  const [currentLikeCount, setCurrentLikeCount] = useState(likeCount);
 
+  // Initialize like status - for now we'll use optimistic updates
   useEffect(() => {
-    getPostById(id)
-      .then((post) => {
-        // Handle post data if needed
-      })
-      .catch((error) => {
-        console.error("Error fetching post:", error);
-      }
-    );
-  }, [id]);
+    setIsLiked(false); // Default to not liked
+    setCurrentLikeCount(likeCount);
+  }, [id, isAuthenticated, likeCount]);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation when clicking like button
+    
+    if (!isAuthenticated) {
+      alert("Please login to like posts");
+      return;
+    }
+
+    try {
+      const result = await likePost(id);
+      // Update like status based on server response
+      const newIsLiked = result.message === "Liked";
+      setIsLiked(newIsLiked);
+      setCurrentLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    } catch (error) {
+      console.error("Error liking post:", error);
+      alert("Failed to like post. Please try again.");
+    }
+  };
 
   return (
     <Card shadow={true} className="h-[460px] flex flex-col justify-between">
@@ -92,7 +114,7 @@ export function BlogPostCard({
 
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-4">
-            <Link href={`/profile`}>
+            <Link href={`/user/${authorID}`}>
               <Avatar
                 size="sm"
                 variant="circular"
@@ -102,7 +124,7 @@ export function BlogPostCard({
               />
             </Link>
             <div>
-              <Link href={`/profile`}>
+              <Link href={`/user/${authorID}`}>
                 <Typography variant="small" color="blue-gray" className="mb-0.5 !font-medium">
                   {authorName}
                 </Typography>
@@ -118,12 +140,19 @@ export function BlogPostCard({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <HeartIcon className="h-4 w-4 text-red-500" />
+            <button 
+              onClick={handleLike}
+              className="flex items-center gap-1 hover:scale-110 transition-transform"
+            >
+              {isLiked ? (
+                <HeartIconSolid className="h-4 w-4 text-red-500" />
+              ) : (
+                <HeartIcon className="h-4 w-4 text-red-500" />
+              )}
               <Typography variant="small" className="text-gray-600">
-                {likeCount}
+                {currentLikeCount}
               </Typography>
-            </div>
+            </button>
             <div className="flex items-center gap-1">
               <ChatBubbleLeftIcon className="h-4 w-4 text-blue-500" />
               <Typography variant="small" className="text-gray-600">

@@ -144,7 +144,7 @@ export function Comments({ postId }: CommentsProps) {
       
       <div className="mb-8">
         {/* NewComment component - will need to be updated to accept props */}
-        <NewComment />
+        <NewComment postId={postId} onCommentAdded={handleCommentAdded} />
       </div>
       
       <Typography variant="h4" className="mt-12 md:text-center" color="blue-gray">

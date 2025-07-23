@@ -7,15 +7,13 @@ import {
   CardBody,
   Avatar,
 } from "@material-tailwind/react";
-import Link from "next/link";
-
 
 interface BlogPostCardProps {
   img: string;
   tag: string;
   title: string;
   desc: string;
-  author: { name: string; img: string; id: number };
+  author: { name: string; img: string };
   date: string;
 }
 
@@ -55,24 +53,15 @@ export function BlogPostCard({
           {desc}
         </Typography>
         <div className="flex items-center gap-4">
-          <Link href={`/user/${author.id}`}>
-            <Avatar
-              size="sm"
-              variant="circular"
-              src={author.img}
-              alt={author.name}
-            />
-          </Link>
+          <Avatar size="sm" variant="circular" src={author.img} alt={author.name} />
           <div>
-            <Link href={`/user/${author.id}`}>
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="mb-0.5 !font-medium"
-              >
-                {author.name}
-              </Typography>
-            </Link>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="mb-0.5 !font-medium"
+            >
+              {author.name}
+            </Typography>
             <Typography
               variant="small"
               color="gray"
@@ -86,6 +75,5 @@ export function BlogPostCard({
     </Card>
   );
 }
-
 
 export default BlogPostCard;

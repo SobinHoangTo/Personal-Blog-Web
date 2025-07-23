@@ -6,6 +6,7 @@ import { Button, Typography, Chip, Avatar } from "@material-tailwind/react";
 import { HeartIcon, ChatBubbleLeftIcon, ShareIcon } from "@heroicons/react/24/outline";
 import { getPostById } from "@/lib/api";
 import { Post } from "@/components/types/post";
+import Link from "next/link";
 
 
 type ContentProps = {
@@ -222,9 +223,11 @@ export default function Content({ postId }: Readonly<ContentProps>) {
               <Typography className="text-gray-600 mb-4">
                 Content creator and blogger passionate about technology and web development.
               </Typography>
-              <Button size="sm" variant="outlined">
-                View Profile
-              </Button>
+              <Link href={`/user/${post.authorID}`}>
+                <Button size="sm" variant="outlined" className="!text-blue-500">
+                  View Profile
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

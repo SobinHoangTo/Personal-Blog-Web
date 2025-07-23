@@ -38,7 +38,7 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			if (user == null || user.Role == 99)
 				return Unauthorized("Sai thông tin đăng nhập hoặc tài khoản bị chặn.");
 
-			
+
 			var role = user.Role.ToString();
 			var userId = user.Id.ToString();
 			var token = _jwtTokenHelper.GenerateToken(user);
@@ -58,7 +58,7 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		[HttpGet("google-login")]
 		public IActionResult GoogleLogin()
 		{
-			var redirectUrl = Url.Action("GoogleResponse", "Users"); // Controller name!
+			var redirectUrl = Url.Action("GoogleResponse", "Users");
 			var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
 			return Challenge(properties, GoogleDefaults.AuthenticationScheme);
 		}
@@ -66,7 +66,8 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		[HttpGet("google-response")]
 		public async Task<IActionResult> GoogleResponse()
 		{
-			var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+			// Use Google authentication scheme to get the result
+			var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
 			if (!result.Succeeded)
 			{
@@ -75,43 +76,123 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 				{
 					Console.WriteLine(failure);
 				}
-				return Unauthorized("Google authentication failed");
+
+				// Redirect to frontend with error
+				var frontendUrl = _config["Frontend:BaseUrl"] ?? "http://localhost:3000";
+				var errorUrl = $"{frontendUrl}/auth/google/callback?error={Uri.EscapeDataString("Google authentication failed")}";
+				return Redirect(errorUrl);
 			}
 
 			var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
 			var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
 
-			// Kiểm tra trong DB nếu user đã tồn tại → trả JWT
-			var user = await _userDao.GetByEmailAsync(email);
-			if (user == null)
+			// Debug: Log all claims to see what Google is actually sending
+			Console.WriteLine("=== Google OAuth Claims ===");
+			foreach (var claim in result.Principal.Claims)
 			{
-				// Nếu chưa có user → tự động đăng ký
-				await _userDao.RegisterAsync(new UserRegisterRequest
-				{
-					Username = email,
-					Email = email,
-					FullName = name,
-					Password = Guid.NewGuid().ToString() // random
-				});
-				user = await _userDao.GetByEmailAsync(email);
+				Console.WriteLine($"Type: {claim.Type}, Value: {claim.Value}");
 			}
 
-			// Sinh token JWT trả về
-			var token = _jwtTokenHelper.GenerateToken(user);
-
-			return Ok(new
+			// Try to get picture from Google API using access token
+			string? picture = null;
+			try
 			{
-				message = "Login with Google success!",
-				token,
-				user = new UserResponse
+				var accessToken = await HttpContext.GetTokenAsync(GoogleDefaults.AuthenticationScheme, "access_token");
+				if (!string.IsNullOrEmpty(accessToken))
 				{
-					Id = user.Id,
-					Username = user.Username,
-					FullName = user.FullName,
-					Email = user.Email,
-					Role = user.Role
+					using var httpClient = new HttpClient();
+					var response = await httpClient.GetAsync($"https://www.googleapis.com/oauth2/v1/userinfo?access_token={accessToken}");
+					if (response.IsSuccessStatusCode)
+					{
+						var userInfo = await response.Content.ReadAsStringAsync();
+						var userInfoJson = System.Text.Json.JsonDocument.Parse(userInfo);
+						if (userInfoJson.RootElement.TryGetProperty("picture", out var pictureElement))
+						{
+							picture = pictureElement.GetString();
+						}
+					}
 				}
-			});
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error getting picture from Google API: {ex.Message}");
+			}
+
+			Console.WriteLine($"Picture URL found: {picture ?? "NULL"}");
+
+			if (string.IsNullOrEmpty(email))
+			{
+				var frontendUrl = _config["Frontend:BaseUrl"] ?? "http://localhost:3000";
+				var errorUrl = $"{frontendUrl}/auth/google/callback?error={Uri.EscapeDataString("Unable to retrieve email from Google")}";
+				return Redirect(errorUrl);
+			}
+
+			try
+			{
+				// Kiểm tra trong DB nếu user đã tồn tại → trả JWT
+				var user = await _userDao.GetByEmailAsync(email);
+				if (user == null)
+				{
+					// Nếu chưa có user → tự động đăng ký với avatar từ Google
+					await _userDao.RegisterAsync(new UserRegisterRequest
+					{
+						Username = email,
+						Email = email,
+						FullName = name ?? email,
+						Password = Guid.NewGuid().ToString() // random
+					});
+					user = await _userDao.GetByEmailAsync(email);
+
+					// Cập nhật avatar từ Google nếu có
+					if (user != null && !string.IsNullOrEmpty(picture))
+					{
+						await _userDao.UpdateProfileAsync(user.Id, new UpdateUserRequest
+						{
+							FullName = user.FullName,
+							Avatar = picture,
+							Bio = user.Bio
+						});
+						user = await _userDao.GetByEmailAsync(email); // Refresh user data
+					}
+				}
+				else
+				{
+					// User đã tồn tại, cập nhật avatar từ Google nếu chưa có hoặc khác
+					if (!string.IsNullOrEmpty(picture) && user.Avatar != picture)
+					{
+						await _userDao.UpdateProfileAsync(user.Id, new UpdateUserRequest
+						{
+							FullName = user.FullName,
+							Avatar = picture,
+							Bio = user.Bio
+						});
+						user = await _userDao.GetByEmailAsync(email); // Refresh user data
+					}
+				}
+
+				if (user == null)
+				{
+					var frontendUrl = _config["Frontend:BaseUrl"] ?? "http://localhost:3000";
+					var errorUrl = $"{frontendUrl}/auth/google/callback?error={Uri.EscapeDataString("Failed to create or retrieve user account")}";
+					return Redirect(errorUrl);
+				}
+
+				// Sinh token JWT trả về
+				var token = _jwtTokenHelper.GenerateToken(user);
+
+				// Redirect to frontend callback page with authentication data
+				var frontendUrl2 = _config["Frontend:BaseUrl"] ?? "http://localhost:3000";
+				var callbackUrl = $"{frontendUrl2}/auth/google/callback?token={Uri.EscapeDataString(token)}&userId={user.Id}&role={user.Role}";
+
+				return Redirect(callbackUrl);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Google login error: {ex.Message}");
+				var frontendUrl = _config["Frontend:BaseUrl"] ?? "http://localhost:3000";
+				var errorUrl = $"{frontendUrl}/auth/google/callback?error={Uri.EscapeDataString("An error occurred during authentication")}";
+				return Redirect(errorUrl);
+			}
 		}
 
 

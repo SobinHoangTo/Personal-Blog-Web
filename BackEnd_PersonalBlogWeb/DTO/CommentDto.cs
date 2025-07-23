@@ -10,6 +10,8 @@
 		public DateTime CreatedDate { get; set; }
 		public int? ParentCommentId { get; set; }
 		public List<CommentDto> Replies { get; set; } = new();
+		public int LikeCount { get; set; }
+		public bool IsLiked { get; set; }
 	}
 
 

@@ -17,6 +17,7 @@ import { LoginResponse } from "@/components/types/auth";
 import { useAuth } from "@/components/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import GoogleLoginButton from "@/components/auth/google-login-button";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -162,6 +163,18 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 mt-6">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <Typography variant="small" color="gray">or</Typography>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+
+            {/* Google Login Button */}
+            <div className="mt-4">
+              <GoogleLoginButton fullWidth disabled={loading} />
+            </div>
 
             <Typography color="gray" className="mt-4 text-center font-normal">
               Don&apos;t have an account?{" "}

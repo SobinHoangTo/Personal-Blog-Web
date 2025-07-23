@@ -5,6 +5,7 @@ import {
   Button,
   IconButton,
   Typography,
+  Avatar,
 } from "@material-tailwind/react";
 import {
   UserCircleIcon,
@@ -21,11 +22,6 @@ const NAV_MENU = [
     name: "Home",
     icon: HomeIcon,
     href: "/",
-  },
-  {
-    name: "Profile",
-    icon: UserCircleIcon,
-    href: "/profile",
   },
   {
     name: "Post Detail",
@@ -95,10 +91,24 @@ export function Navbar() {
               {name}
             </NavItem>
           ))}
+          {isAuthenticated && user && (
+            <NavItem href={`/user/${user.id}`}>
+              <UserCircleIcon className="h-5 w-5" />
+              Profile
+            </NavItem>
+          )}
         </ul>
         <div className="hidden items-center gap-2 lg:flex">
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
+              {user?.avatar && (
+                <Avatar
+                  src={user.avatar}
+                  alt={user.username}
+                  size="sm"
+                  className="ring-2 ring-blue-500/20"
+                />
+              )}
               <Typography variant="small" color="blue-gray">
                 Welcome, {user?.username}!
               </Typography>
@@ -137,16 +147,32 @@ export function Navbar() {
       <Collapse open={open}>
         <div className="container mx-auto mt-3 border-t border-gray-200 px-2 pt-4">
           <ul className="flex flex-col gap-4">
-            {NAV_MENU.map(({ name, icon: Icon }) => (
-              <NavItem key={name}>
+            {NAV_MENU.map(({ name, icon: Icon, href }) => (
+              <NavItem key={name} href={href}>
                 <Icon className="h-5 w-5" />
                 {name}
               </NavItem>
             ))}
+            {isAuthenticated && user && (
+              <NavItem href={`/user/${user.id}`}>
+                <UserCircleIcon className="h-5 w-5" />
+                Profile
+              </NavItem>
+            )}
           </ul>
           <div className="mt-6 mb-4 flex items-center gap-2">
             {isAuthenticated ? (
               <div className="flex flex-col gap-2 w-full">
+                {user?.avatar && (
+                  <div className="flex justify-center">
+                    <Avatar
+                      src={user.avatar}
+                      alt={user.username}
+                      size="md"
+                      className="ring-2 ring-blue-500/20"
+                    />
+                  </div>
+                )}
                 <Typography variant="small" color="blue-gray" className="text-center">
                   Welcome, {user?.username}!
                 </Typography>

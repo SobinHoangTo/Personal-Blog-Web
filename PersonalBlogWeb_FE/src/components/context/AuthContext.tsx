@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@/components/types/auth";
+import { safeDecodeJWT, extractUserFromJWT } from "@/utils/jwtUtils";
 
 interface AuthContextType {
   user: User | null;
@@ -25,13 +26,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (storedToken && storedUserId && storedRole) {
       setToken(storedToken);
-      setUser({
-        id: parseInt(storedUserId),
-        username: "", // Will be fetched from API if needed
-        email: "",
-        fullName: "",
-        role: storedRole
-      });
+      
+      // Decode JWT token to get user info
+      try {
+        console.log("Attempting to decode stored token...");
+        const decoded = safeDecodeJWT(storedToken);
+        
+        if (decoded && decoded.payload) {
+          const userInfo = extractUserFromJWT(decoded.payload);
+          setUser({
+            id: parseInt(storedUserId),
+            ...userInfo,
+            role: storedRole
+          });
+        } else {
+          throw new Error("Failed to decode JWT token");
+        }
+      } catch (error) {
+        console.error("Error decoding stored token:", error);
+        // Clear invalid token data
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
+        setUser(null);
+        setToken(null);
+      }
     }
   }, []);
 
@@ -41,13 +60,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("userRole", role);
     
     setToken(newToken);
-    setUser({
-      id: parseInt(userId),
-      username: "",
-      email: "",
-      fullName: "",
-      role
-    });
+    
+    // Decode JWT token to get user info
+    try {
+      console.log("Attempting to decode login token...");
+      const decoded = safeDecodeJWT(newToken);
+      
+      if (decoded?.payload) {
+        const userInfo = extractUserFromJWT(decoded.payload);
+        setUser({
+          id: parseInt(userId),
+          ...userInfo,
+          role
+        });
+      } else {
+        throw new Error("Failed to decode JWT token");
+      }
+    } catch (error) {
+      console.error("Error decoding login token:", error);
+      setUser({
+        id: parseInt(userId),
+        username: "",
+        email: "",
+        fullName: "",
+        avatar: "",
+        role
+      });
+    }
   };
 
   const logout = () => {
