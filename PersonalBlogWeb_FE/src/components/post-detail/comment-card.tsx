@@ -13,10 +13,25 @@ interface CommentCardProps {
   img: string;
   name: string;
   desc: string;
-  hours: string;
+  hours?: string;
+  likeCount?: number;
+  isLiked?: boolean;
+  onLike?: () => void;
+  onReply?: () => void;
+  isReply?: boolean;
 }
 
-export function CommentCard({ img, name, desc, hours }: CommentCardProps) {
+export function CommentCard({ 
+  img, 
+  name, 
+  desc, 
+  hours, 
+  likeCount = 0, 
+  isLiked = false, 
+  onLike, 
+  onReply, 
+  isReply = false 
+}: Readonly<CommentCardProps>) {
   return (
     <Card
       shadow={false}
@@ -41,32 +56,39 @@ export function CommentCard({ img, name, desc, hours }: CommentCardProps) {
             >
               {name}
             </Typography>
-            <Typography variant="small" className="font-medium !text-gray-500">
-              {hours}
-            </Typography>
+            {hours && (
+              <Typography variant="small" color="gray" className="font-normal">
+                {hours}
+              </Typography>
+            )}
           </div>
           <Typography className="w-full font-normal mb-4 !text-gray-500">
             {desc}
           </Typography>
           <div className="!w-full flex justify-end">
             <div className="flex items-center gap-2">
+              {!isReply && (
+                <Button
+                  size="sm"
+                  variant="text"
+                  color="gray"
+                  className="flex items-center gap-1 flex-shrink-0"
+                  onClick={onReply}
+                >
+                  <ArrowUturnLeftIcon className="w-4 text-4 h-4" />
+                  Reply
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="text"
-                color="gray"
-                className="flex items-center gap-1 flex-shrink-0"
+                className={`flex items-center gap-1 flex-shrink-0 ${
+                  isLiked ? 'text-red-500' : 'text-gray-500'
+                }`}
+                onClick={onLike}
               >
-                <ArrowUturnLeftIcon className="w-4 text-4 h-4" />
-                Reply
-              </Button>
-              <Button
-                size="sm"
-                variant="text"
-                color="red"
-                className="flex items-center gap-1 flex-shrink-0"
-              >
-                <HeartIcon className="w-4 text-4 h-4" />
-                Reply
+                <HeartIcon className={`w-4 h-4 ${isLiked ? 'text-red-500' : ''}`} />
+                {likeCount > 0 ? `${likeCount} Like${likeCount > 1 ? 's' : ''}` : 'Like'}
               </Button>
             </div>
           </div>

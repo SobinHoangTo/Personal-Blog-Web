@@ -7,26 +7,30 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import {
-  RectangleStackIcon,
   UserCircleIcon,
-  CommandLineIcon,
   XMarkIcon,
   Bars3Icon,
+  HomeIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/solid";
+import { useAuth } from "@/components/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const NAV_MENU = [
   {
-    name: "Page",
-    icon: RectangleStackIcon,
+    name: "Home",
+    icon: HomeIcon,
+    href: "/",
   },
   {
-    name: "Account",
+    name: "Profile",
     icon: UserCircleIcon,
+    href: "/profile",
   },
   {
-    name: "Docs",
-    icon: CommandLineIcon,
-    href: "https://www.material-tailwind.com/docs/react/installation",
+    name: "Post Detail",
+    icon: ChatBubbleLeftRightIcon,
+    href: "/post-detail",
   },
 ];
 
@@ -41,7 +45,6 @@ function NavItem({ children, href }: Readonly<NavItemProps>) {
       <Typography
         as="a"
         href={href || "#"}
-        target={href ? "_blank" : "_self"}
         variant="paragraph"
         color="gray"
         className="flex items-center gap-2 font-medium text-gray-900">
@@ -53,8 +56,16 @@ function NavItem({ children, href }: Readonly<NavItemProps>) {
 
 export function Navbar() {
   const [open, setOpen] = React.useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
+  const router = useRouter();
 
   const handleOpen = () => setOpen((cur) => !cur);
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    router.push("/");
+  };
 
   React.useEffect(() => {
   const handleResize = () => {
@@ -72,11 +83,10 @@ export function Navbar() {
       <div className="container mx-auto flex items-center justify-between">
         <Typography
           as="a"
-          href="https://www.material-tailwind.com"
-          target="_blank"
+          href="/"
           color="blue-gray"
           className="text-lg font-bold" >
-          Material Tailwind
+          BlogWeb
         </Typography>
         <ul className="ml-10 hidden items-center gap-8 lg:flex">
           {NAV_MENU.map(({ name, icon: Icon, href }) => (
@@ -87,10 +97,29 @@ export function Navbar() {
           ))}
         </ul>
         <div className="hidden items-center gap-2 lg:flex">
-          <Button variant="text">Sign In</Button>
-          <a href="https://www.material-tailwind.com" target="_blank">
-            <Button color="gray">Register</Button>
-          </a>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              <Typography variant="small" color="blue-gray">
+                Welcome, {user?.username}!
+              </Typography>
+              <Button 
+                variant="text" 
+                color="red"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <>
+              <a href="/login">
+                <Button variant="text">Sign In</Button>
+              </a>
+              <a href="/register">
+                <Button color="gray">Register</Button>
+              </a>
+            </>
+          )}
         </div>
         <IconButton
           variant="text"
@@ -116,10 +145,30 @@ export function Navbar() {
             ))}
           </ul>
           <div className="mt-6 mb-4 flex items-center gap-2">
-            <Button variant="text">Sign In</Button>
-            <a href="https://www.material-tailwind.com" target="_blank">
-              <Button color="gray">Register</Button>
-            </a>
+            {isAuthenticated ? (
+              <div className="flex flex-col gap-2 w-full">
+                <Typography variant="small" color="blue-gray" className="text-center">
+                  Welcome, {user?.username}!
+                </Typography>
+                <Button 
+                  variant="text" 
+                  color="red"
+                  onClick={handleLogout}
+                  fullWidth
+                >
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <>
+                <a href="/login" className="flex-1">
+                  <Button variant="text" fullWidth>Sign In</Button>
+                </a>
+                <a href="/register" className="flex-1">
+                  <Button color="gray" fullWidth>Register</Button>
+                </a>
+              </>
+            )}
           </div>
         </div>
       </Collapse>

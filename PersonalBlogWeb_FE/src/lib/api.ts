@@ -1,18 +1,7 @@
+import { Post } from "@/components/types/post";
+
 // lib/api.ts
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export type Post = {
-  id: number;
-  title: string;
-  content: string;
-  coverImage?: string;
-  createdDate: string;
-  categoryName: string;
-  authorName: string;
-  authorAvatar: string;
-  likeCount: number;
-  commentCount: number;
-};
 
 export async function getAllPosts(): Promise<Post[]> {
   const res = await fetch(`${BASE_URL}/Posts`);
@@ -73,5 +62,112 @@ export async function getPostsByCategory(categoryId: number) {
   } catch (error) {
     console.error("Lỗi tải posts theo category:", error);
     return [];
+  }
+}
+
+export async function getPostById(id: number) {
+  try {
+    const res = await fetch(`${BASE_URL}/Posts/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch post");
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return null;
+  }
+}
+
+export async function getPostComments(postId: number) {
+  try {
+    const res = await fetch(`${BASE_URL}/Comment/post/${postId}`);
+    if (!res.ok) throw new Error("Failed to fetch comments");
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    return [];
+  }
+}
+
+export async function createComment(
+  postId: number,
+  content: string,
+  parentCommentId?: number
+) {
+  try {
+    const res = await fetch(`${BASE_URL}/Comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        postId,
+        content,
+        parentCommentId,
+      }),
+    });
+    if (!res.ok) throw new Error("Failed to create comment");
+    return await res.json();
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    return null;
+  }
+}
+
+export async function getCommentLikes(commentId: number) {
+  try {
+    const res = await fetch(`${BASE_URL}/Likes/comment/${commentId}`);
+    if (!res.ok) throw new Error("Failed to fetch comment likes");
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching comment likes:", error);
+    return [];
+  }
+}
+
+// Auth API functions
+export async function loginUser(username: string, password: string) {
+  try {
+    const res = await fetch(`${BASE_URL}/Users/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Login failed");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+}
+
+export async function registerUser(userData: any) {
+  try {
+    const res = await fetch(`${BASE_URL}/Users/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Registration failed");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
   }
 }

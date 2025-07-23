@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import {
   Typography,
@@ -10,18 +10,10 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 import { HeartIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { BlogPostCardProps } from "../types/post";
+import { getPostById } from "@/lib/api";
 
-interface BlogPostCardProps {
-  thumbnail: string;
-  categoryName: string;
-  title: string;
-  content: string;
-  authorName: string; 
-  authorAvatar: string
-  createdDate: string;
-  likeCount?: number;
-  commentCount?: number;
-}
 
 function stripHtmlTags(html: string): string {
   const doc = new DOMParser().parseFromString(html, "text/html");
@@ -38,7 +30,8 @@ export function formatDate(dateString: string): string {
 }
 
 export function BlogPostCard({
-  thumbnail,
+  id,
+  coverImage,
   categoryName,
   title,
   content,
@@ -51,16 +44,29 @@ export function BlogPostCard({
   const plainText = stripHtmlTags(content || "");
   const shortText = plainText.length > 250 ? plainText.slice(0, 250) + "..." : plainText;
 
+  useEffect(() => {
+    getPostById(id)
+      .then((post) => {
+        // Handle post data if needed
+      })
+      .catch((error) => {
+        console.error("Error fetching post:", error);
+      }
+    );
+  }, [id]);
+
   return (
     <Card shadow={true} className="h-[460px] flex flex-col justify-between">
-      <CardHeader className="relative h-[180px] overflow-hidden">
+      <CardHeader className="relative h-[450px] overflow-hidden">
+        <Link href={`/post-detail/${id}`}>
         <Image
           width={768}
           height={768}
-          src={thumbnail}
+          src={coverImage}
           alt={title}
           className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
         />
+        </Link>
       </CardHeader>
 
       <CardBody className="p-6 flex flex-col justify-between h-full">
@@ -68,15 +74,15 @@ export function BlogPostCard({
           <Typography variant="small" color="blue" className="mb-2 !font-medium">
             {categoryName}
           </Typography>
-          <Typography
-            as="a"
-            href="#"
-            variant="h5"
-            color="blue-gray"
-            className="mb-2 normal-case transition-colors hover:text-gray-900"
-          >
-            {title}
-          </Typography>
+          <Link href={`/post-detail/${id}`}>
+            <Typography
+              variant="h5"
+              color="blue-gray"
+              className="mb-2 normal-case transition-colors hover:text-gray-900"
+            >
+              {title}
+            </Typography>
+          </Link>
           <Typography
             className="mb-6 font-normal !text-gray-500 line-clamp-3 text-sm leading-relaxed"
           >
@@ -86,17 +92,21 @@ export function BlogPostCard({
 
         <div className="flex items-center justify-between mt-auto">
           <div className="flex items-center gap-4">
-            <Avatar
-              size="sm"
-              variant="circular"
-              className="!border-2 !border-white"
-              src={authorAvatar}
-              alt={authorName}
-            />
+            <Link href={`/profile`}>
+              <Avatar
+                size="sm"
+                variant="circular"
+                className="!border-2 !border-white"
+                src={authorAvatar}
+                alt={authorName}
+              />
+            </Link>
             <div>
-              <Typography  variant="small" color="blue-gray" className="mb-0.5 !font-medium">
-                {authorName}
-              </Typography>
+              <Link href={`/profile`}>
+                <Typography variant="small" color="blue-gray" className="mb-0.5 !font-medium">
+                  {authorName}
+                </Typography>
+              </Link>
               <Typography
                 variant="small"
                 color="gray"

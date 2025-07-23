@@ -58,6 +58,7 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 				Content = c.Content,
 				AuthorId = c.UserId,
 				AuthorName = c.User.FullName,
+				AuthorAvatar = c.User.Avatar,
 				ParentCommentId = c.ParentCommentId,
 				Replies = new List<CommentDto>() // Tạm thời để rỗng
 			}).ToList();
@@ -79,6 +80,8 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 				Content = post.Content,
 				CoverImage = post.CoverImage,
 				AuthorID = post.AuthorId,
+				AuthorName = post.Author.FullName,
+				AuthorAvatar = post.Author.Avatar,
 				CreatedDate = post.CreatedDate,
 				CategoryName = post.Category?.Name,
 				LikeCount = post.Likes.Count,
