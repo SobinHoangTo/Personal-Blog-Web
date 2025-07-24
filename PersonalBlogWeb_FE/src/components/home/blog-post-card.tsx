@@ -17,6 +17,13 @@ import { likePost } from "@/lib/api";
 import { useAuth } from "@/components/context/AuthContext";
 
 
+interface BlogPostCardExtendedProps extends BlogPostCardProps {
+  currentUser: any;
+  postAuthor: any;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}
+
 function stripHtmlTags(html: string): string {
   const doc = new DOMParser().parseFromString(html, "text/html");
   return doc.body.textContent || "";
@@ -43,7 +50,11 @@ export function BlogPostCard({
   createdDate,
   likeCount = 0,
   commentCount = 0,
-}: Readonly<BlogPostCardProps>) {
+  currentUser,
+  postAuthor,
+  onEdit,
+  onDelete,
+}: Readonly<BlogPostCardExtendedProps>) {
   const plainText = stripHtmlTags(content || "");
   const shortText = plainText.length > 250 ? plainText.slice(0, 250) + "..." : plainText;
   const { isAuthenticated } = useAuth();
@@ -76,6 +87,13 @@ export function BlogPostCard({
       alert("Failed to like post. Please try again.");
     }
   };
+
+  // Permission logic
+  const isOwner = currentUser && currentUser.id === authorID;
+  const isAdmin = currentUser && currentUser.role === "0";
+  const isStaff = currentUser && currentUser.role === "2";
+  const canEdit = isOwner;
+  const canDelete = isAdmin || isStaff || isOwner;
 
   return (
     <Card shadow={true} className="h-[460px] flex flex-col justify-between">
@@ -110,6 +128,15 @@ export function BlogPostCard({
           >
             {shortText}
           </Typography>
+          {/* Edit/Delete Buttons */}
+          <div className="flex gap-2 mt-2">
+            {canEdit && (
+              <button className="text-blue-500 hover:underline text-sm" onClick={onEdit}>Edit</button>
+            )}
+            {canDelete && (
+              <button className="text-red-500 hover:underline text-sm" onClick={onDelete}>Delete</button>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-between mt-auto">

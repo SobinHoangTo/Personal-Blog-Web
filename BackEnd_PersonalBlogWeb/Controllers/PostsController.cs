@@ -101,6 +101,33 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return deleted ? NoContent() : StatusCode(500, "Failed to delete post");
 		}
 
+		// PATCH: api/Posts/5/soft-delete
+		[Authorize]
+		[HttpPatch("{id}/soft-delete")]
+		public async Task<IActionResult> SoftDeletePost(int id)
+		{
+			var post = await _PostDao.FindEntityByIdAsync(id);
+			if (post == null)
+				return NotFound(new { message = "Post not found" });
+
+			// Owner, Admin, or Staff can soft delete posts
+			if (!IsOwner(post.AuthorId) && !IsAdmin && !IsStaff)
+				return Forbid("You are not allowed to delete this post.");
+
+			// Update post status to 99 (soft deleted)
+			var updateRequest = new PostUpdateRequest
+			{
+				Title = post.Title,
+				Content = post.Content,
+				CategoryId = post.CategoryId ?? 1,
+				Status = 99,
+				CoverImage = post.CoverImage
+			};
+
+			var updated = await _PostDao.UpdatePostAsync(id, updateRequest);
+			return Ok(new { message = "Post soft deleted successfully", post = updated });
+		}
+
 		// GET: api/Posts/search
 		[HttpGet("search")]
 		public async Task<IActionResult> SearchPosts([FromQuery] string? keyword, [FromQuery] int? categoryId, [FromQuery] int? authorId)

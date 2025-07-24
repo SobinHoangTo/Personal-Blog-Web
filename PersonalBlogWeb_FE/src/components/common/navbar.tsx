@@ -104,13 +104,13 @@ export function Navbar() {
               {user?.avatar && (
                 <Avatar
                   src={user.avatar}
-                  alt={user.username}
+                  alt={user.fullName}
                   size="sm"
                   className="ring-2 ring-blue-500/20"
                 />
               )}
               <Typography variant="small" color="blue-gray">
-                Welcome, {user?.username}!
+                Welcome, {user?.fullName}!
               </Typography>
               <Button 
                 variant="text" 
@@ -167,14 +167,14 @@ export function Navbar() {
                   <div className="flex justify-center">
                     <Avatar
                       src={user.avatar}
-                      alt={user.username}
+                      alt={user.fullName}
                       size="md"
                       className="ring-2 ring-blue-500/20"
                     />
                   </div>
                 )}
                 <Typography variant="small" color="blue-gray" className="text-center">
-                  Welcome, {user?.username}!
+                  Welcome, {user?.fullName}!
                 </Typography>
                 <Button 
                   variant="text" 

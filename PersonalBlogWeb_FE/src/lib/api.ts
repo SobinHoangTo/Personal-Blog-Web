@@ -339,3 +339,107 @@ export async function deleteComment(commentId: number) {
     throw error;
   }
 }
+
+// Create Post
+export async function createPost({
+  title,
+  content,
+  categoryId,
+  status,
+  coverImage,
+}: {
+  title: string;
+  content: string;
+  categoryId: number;
+  status?: number;
+  coverImage?: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      title,
+      content,
+      categoryId,
+      status: status ?? 0,
+      coverImage,
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to create post");
+  return await res.json();
+}
+
+export async function updateUserProfile({
+  fullName,
+  bio,
+  avatar,
+}: {
+  fullName: string;
+  bio: string;
+  avatar: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+
+  const res = await fetch(`${BASE_URL}/Users/update-profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      fullName,
+      bio,
+      avatar,
+    }),
+  });
+
+  if (!res.ok) throw new Error("Failed to update profile");
+  return await res.json();
+}
+
+export async function softDeletePost(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+
+  const res = await fetch(`${BASE_URL}/Posts/${postId}/soft-delete`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to delete post");
+  return await res.json();
+}
+
+export async function updatePost(
+  postId: number,
+  postData: {
+    title: string;
+    content: string;
+    categoryId: number;
+    coverImage?: string;
+  }
+) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+
+  const res = await fetch(`${BASE_URL}/Posts/${postId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(postData),
+  });
+
+  if (!res.ok) throw new Error("Failed to update post");
+  return await res.json();
+}
