@@ -66,7 +66,7 @@ export function NewComment({ postId, onCommentAdded }: NewCommentProps) {
           variant="small"
           className=" font-bold flex items-center gap-2 !text-gray-900"
         >
-          {user?.username || "User"}
+          {user?.fullName || "User"}
         </Typography>
       </div>
       <div className="flex-col mt-4 pl-14 h-full">

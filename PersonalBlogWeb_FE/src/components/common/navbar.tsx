@@ -12,6 +12,7 @@ import {
   XMarkIcon,
   Bars3Icon,
   HomeIcon,
+  TagIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/solid";
 import { useAuth } from "@/components/context/AuthContext";
@@ -22,11 +23,6 @@ const NAV_MENU = [
     name: "Home",
     icon: HomeIcon,
     href: "/",
-  },
-  {
-    name: "Post Detail",
-    icon: ChatBubbleLeftRightIcon,
-    href: "/post-detail",
   },
 ];
 
@@ -85,12 +81,29 @@ export function Navbar() {
           BlogWeb
         </Typography>
         <ul className="ml-10 hidden items-center gap-8 lg:flex">
-          {NAV_MENU.map(({ name, icon: Icon, href }) => (
-            <NavItem key={name} href={href}>
-              <Icon className="h-5 w-5" />
-              {name}
+          <NavItem href={`/`}>
+            <HomeIcon className="h-5 w-5" />
+            Home
+          </NavItem>
+
+          {isAuthenticated && user && user.role === "0" && (
+            <NavItem href="/admin/categories">
+              <TagIcon className="h-5 w-5" />
+              Categories
             </NavItem>
-          ))}
+          )}
+          {isAuthenticated && user && user.role === "0" && (
+            <NavItem href="/admin/posts">
+              <ChatBubbleLeftRightIcon className="h-5 w-5" />
+              Manage Posts
+            </NavItem>
+          )}
+          {isAuthenticated && user && user.role === "0" && (
+            <NavItem href="/admin/accounts">
+              <UserCircleIcon className="h-5 w-5" />
+              Manage Accounts
+            </NavItem>
+          )}
           {isAuthenticated && user && (
             <NavItem href={`/user/${user.id}`}>
               <UserCircleIcon className="h-5 w-5" />
@@ -104,13 +117,13 @@ export function Navbar() {
               {user?.avatar && (
                 <Avatar
                   src={user.avatar}
-                  alt={user.username}
+                  alt={user.fullName}
                   size="sm"
                   className="ring-2 ring-blue-500/20"
                 />
               )}
               <Typography variant="small" color="blue-gray">
-                Welcome, {user?.username}!
+                Welcome, {user?.fullName}!
               </Typography>
               <Button 
                 variant="text" 
@@ -153,6 +166,24 @@ export function Navbar() {
                 {name}
               </NavItem>
             ))}
+            {isAuthenticated && user && user.role === "0" && (
+              <NavItem href="/admin/categories">
+                <HomeIcon className="h-5 w-5" />
+                Categories
+              </NavItem>
+            )}
+            {isAuthenticated && user && user.role === "0" && (
+              <NavItem href="/admin/posts">
+                <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                Manage Posts
+              </NavItem>
+            )}
+            {isAuthenticated && user && user.role === "0" && (
+              <NavItem href="/admin/accounts">
+                <UserCircleIcon className="h-5 w-5" />
+                Manage Accounts
+              </NavItem>
+            )}
             {isAuthenticated && user && (
               <NavItem href={`/user/${user.id}`}>
                 <UserCircleIcon className="h-5 w-5" />
@@ -167,14 +198,14 @@ export function Navbar() {
                   <div className="flex justify-center">
                     <Avatar
                       src={user.avatar}
-                      alt={user.username}
+                      alt={user.fullName}
                       size="md"
                       className="ring-2 ring-blue-500/20"
                     />
                   </div>
                 )}
                 <Typography variant="small" color="blue-gray" className="text-center">
-                  Welcome, {user?.username}!
+                  Welcome, {user?.fullName}!
                 </Typography>
                 <Button 
                   variant="text" 

@@ -69,7 +69,7 @@ export function ReplyComment({ postId, parentCommentId, onReplyAdded, onCancel }
           variant="small"
           className=" font-bold flex items-center gap-2 !text-gray-900"
         >
-          {user?.username || "User"}
+          {user?.fullName || "User"}
         </Typography>
       </div>
       

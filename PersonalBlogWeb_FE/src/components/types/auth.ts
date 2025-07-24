@@ -21,9 +21,11 @@ export interface RegisterRequest {
 
 export interface User {
   id: number;
+  userID: number;
   username: string;
   email: string;
   fullName: string;
   role: string;
   avatar?: string;
+  bio?: string;
 }

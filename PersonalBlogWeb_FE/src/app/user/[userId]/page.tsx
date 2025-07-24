@@ -9,6 +9,7 @@ import {
   UserProfileError
 } from "@/components/user-profile";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import CreatePostForm from "@/components/user-profile/create-post-form";
 
 interface UserProfilePageProps {
   readonly params: Promise<{ userId: string }>;
@@ -44,6 +45,9 @@ export default function UserProfilePage({ params }: UserProfilePageProps) {
       <Navbar />
       <div className="min-h-screen bg-gray-50">
         <UserProfileHeader user={user} userId={userId} postsCount={posts.length} />
+        {user.id === userId && (
+          <CreatePostForm userId={userId} onPostCreated={() => window.location.reload()} />
+        )}
         <UserPostsSection user={user} posts={posts} />
       </div>
       <Footer />

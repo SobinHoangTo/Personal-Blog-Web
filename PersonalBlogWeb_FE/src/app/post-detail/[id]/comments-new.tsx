@@ -139,17 +139,13 @@ export function Comments({ postId }: CommentsProps) {
         className="my-6 md:my-14 md:text-center"
         color="blue-gray"
       >
-        Post Your Comment
+        Leave Your Comment
       </Typography>
       
       <div className="mb-8">
         {/* NewComment component - will need to be updated to accept props */}
         <NewComment postId={postId} onCommentAdded={handleCommentAdded} />
       </div>
-      
-      <Typography variant="h4" className="mt-12 md:text-center" color="blue-gray">
-        {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
-      </Typography>
       
       {comments.length === 0 ? (
         <div className="text-center py-8">

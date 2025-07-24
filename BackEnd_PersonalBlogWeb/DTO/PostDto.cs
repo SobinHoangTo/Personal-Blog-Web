@@ -14,6 +14,7 @@
 		public int LikeCount { get; set; }
 		public int CommentCount { get; set; }
 		public List<CommentDto>? Comments { get; set; }
+		public int Status { get; set; }
 	}
 
 }

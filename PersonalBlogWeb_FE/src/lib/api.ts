@@ -1,4 +1,5 @@
 import { Post } from "@/components/types/post";
+import { Category } from "@/components/types/category";
 
 // lib/api.ts
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -25,6 +26,29 @@ export async function getAllPosts(): Promise<Post[]> {
     authorID: p.authorID,
     authorName: p.authorName,
     authorAvatar: p.authorAvatar,
+    status: p.status,
+  }));
+}
+
+export async function getAllPostsForAdmin(): Promise<Post[]> {
+  const res = await fetch(`${BASE_URL}/Posts/admin`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch posts for admin");
+  }
+  const posts = await res.json();
+  return posts.map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    content: p.content,
+    coverImage: p.coverImage || "/blog_background.jpg",
+    createdDate: p.createdDate,
+    categoryName: p.categoryName,
+    likeCount: p.likeCount,
+    commentCount: p.commentCount,
+    authorID: p.authorID,
+    authorName: p.authorName,
+    authorAvatar: p.authorAvatar,
+    status: p.status,
   }));
 }
 
@@ -338,4 +362,269 @@ export async function deleteComment(commentId: number) {
     console.error("Error deleting comment:", error);
     throw error;
   }
+}
+
+// Create Post
+export async function createPost({
+  title,
+  content,
+  categoryId,
+  status,
+  coverImage,
+}: {
+  title: string;
+  content: string;
+  categoryId: number;
+  status?: number;
+  coverImage?: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      title,
+      content,
+      categoryId,
+      status: status ?? 0,
+      coverImage,
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to create post");
+  return await res.json();
+}
+
+export async function updateUserProfile({
+  fullName,
+  bio,
+  avatar,
+}: {
+  fullName: string;
+  bio: string;
+  avatar: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+
+  const res = await fetch(`${BASE_URL}/Users/update-profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      fullName,
+      bio,
+      avatar,
+    }),
+  });
+
+  if (!res.ok) throw new Error("Failed to update profile");
+  return await res.json();
+}
+
+export async function softDeletePost(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+
+  const res = await fetch(`${BASE_URL}/Posts/${postId}/soft-delete`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to delete post");
+  return await res.json();
+}
+
+export async function updatePost(
+  postId: number,
+  postData: {
+    title: string;
+    content: string;
+    categoryId: number;
+    coverImage?: string;
+  }
+) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+
+  const res = await fetch(`${BASE_URL}/Posts/${postId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(postData),
+  });
+
+  if (!res.ok) throw new Error("Failed to update post");
+  return await res.json();
+}
+
+// Admin Category Management
+export async function createCategory(category: {
+  name: string;
+  description?: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Categories`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(category),
+  });
+  if (!res.ok) throw new Error("Failed to create category");
+  return await res.json();
+}
+
+export async function updateCategory(
+  id: number,
+  category: { name: string; description?: string }
+) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Categories/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ id, ...category }),
+  });
+  if (!res.ok) throw new Error("Failed to update category");
+  if (res.status === 204) return true;
+  return await res.json();
+}
+
+export async function fetchCategoryById(id: number): Promise<Category> {
+  const res = await fetch(`${BASE_URL}/Categories/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch category");
+  return await res.json();
+}
+
+// Admin Account Management
+export async function getAllAccounts() {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch accounts");
+  return await res.json();
+}
+
+export async function createStaffAccount({
+  username,
+  fullName,
+  email,
+  password,
+}: {
+  username: string;
+  fullName: string;
+  email: string;
+  password: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Users/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ username, fullName, email, password }),
+  });
+  if (!res.ok) throw new Error("Failed to create staff account");
+  return await res.json();
+}
+
+export async function banAccount(id: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Users/ban/${id}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to ban account");
+  return true;
+}
+
+export async function unbanAccount(id: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Users/unban/${id}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to unban account");
+  return true;
+}
+
+export async function deleteAccount(id: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Users/delete-user/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to delete account");
+  return true;
+}
+
+export async function searchAccounts(query: string) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(
+    `${BASE_URL}/Users/search?query=${encodeURIComponent(query)}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  if (!res.ok) throw new Error("Failed to search accounts");
+  // Convert role to string for frontend consistency
+  const users = await res.json();
+  return users.map((u: any) => ({ ...u, role: u.role?.toString() ?? "" }));
+}
+
+export async function approvePost(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Posts/${postId}/approve`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to approve post");
+  return true;
+}
+
+export async function rejectPost(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Posts/${postId}/reject`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to reject post");
+  return true;
+}
+
+export async function restorePost(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Posts/${postId}/restore`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to restore post");
+  return true;
 }

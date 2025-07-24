@@ -243,8 +243,7 @@ export default function PostList() {
                     authorName={post.authorName}
                     authorAvatar={post.authorAvatar}
                     likeCount={post.likeCount}
-                    commentCount={post.commentCount}
-                  />
+                    commentCount={post.commentCount} currentUser={undefined} postAuthor={undefined}                  />
                 ))}
               </div>
 

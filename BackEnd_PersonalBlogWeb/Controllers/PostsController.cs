@@ -26,6 +26,18 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return Ok(posts);
 		}
 
+		// GET: api/Posts/admin
+		[HttpGet("admin")]
+		public async Task<IActionResult> GetPostsForAdmin()
+		{
+			var posts = await _PostDao.GetPostsForAdminAsync();
+			if (posts == null || !posts.Any())
+			{
+				return NotFound(new { message = "No posts found for admin." });
+			}
+			return Ok(posts);
+		}
+
 		// GET: api/Posts/5
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetPost(int id)
@@ -101,6 +113,33 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return deleted ? NoContent() : StatusCode(500, "Failed to delete post");
 		}
 
+		// PATCH: api/Posts/5/soft-delete
+		[Authorize]
+		[HttpPatch("{id}/soft-delete")]
+		public async Task<IActionResult> SoftDeletePost(int id)
+		{
+			var post = await _PostDao.FindEntityByIdAsync(id);
+			if (post == null)
+				return NotFound(new { message = "Post not found" });
+
+			// Owner, Admin, or Staff can soft delete posts
+			if (!IsOwner(post.AuthorId) && !IsAdmin && !IsStaff)
+				return Forbid("You are not allowed to delete this post.");
+
+			// Update post status to 99 (soft deleted)
+			var updateRequest = new PostUpdateRequest
+			{
+				Title = post.Title,
+				Content = post.Content,
+				CategoryId = post.CategoryId ?? 1,
+				Status = 99,
+				CoverImage = post.CoverImage
+			};
+
+			var updated = await _PostDao.UpdatePostAsync(id, updateRequest);
+			return Ok(new { message = "Post soft deleted successfully", post = updated });
+		}
+
 		// GET: api/Posts/search
 		[HttpGet("search")]
 		public async Task<IActionResult> SearchPosts([FromQuery] string? keyword, [FromQuery] int? categoryId, [FromQuery] int? authorId)
@@ -112,6 +151,33 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return results == null || !results.Any()
 				? NotFound(new { message = "No posts found matching criteria" })
 				: Ok(results);
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("{id}/approve")]
+		public async Task<IActionResult> ApprovePost(int id)
+		{
+			var success = await _PostDao.ApprovePostAsync(id);
+			if (!success) return NotFound("Post not found");
+			return Ok("Post approved");
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("{id}/reject")]
+		public async Task<IActionResult> RejectPost(int id)
+		{
+			var success = await _PostDao.RejectPostAsync(id);
+			if (!success) return NotFound("Post not found");
+			return Ok("Post rejected");
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("{id}/restore")]
+		public async Task<IActionResult> RestorePost(int id)
+		{
+			var success = await _PostDao.RestorePostAsync(id);
+			if (!success) return NotFound("Post not found");
+			return Ok("Post restored");
 		}
 	}
 }

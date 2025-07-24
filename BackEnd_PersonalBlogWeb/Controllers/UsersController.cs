@@ -36,7 +36,7 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 
 			var user = await _userDao.LoginAsync(req.Username, req.Password);
 			if (user == null || user.Role == 99)
-				return Unauthorized("Sai thông tin đăng nhập hoặc tài khoản bị chặn.");
+				return Unauthorized("Wrong login information or account is blocked.");
 
 
 			var role = user.Role.ToString();
@@ -257,12 +257,30 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		}
 
 		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("ban/{id}")]
+		public async Task<IActionResult> BanUser(int id)
+		{
+			var success = await _userDao.BanUserAsync(id);
+			if (!success) return BadRequest("Không thể ban user.");
+			return Ok("User banned.");
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("unban/{id}")]
+		public async Task<IActionResult> UnbanUser(int id)
+		{
+			var success = await _userDao.UnbanUserAsync(id);
+			if (!success) return BadRequest("Không thể unban user.");
+			return Ok("User unbanned.");
+		}
+
+		[Authorize(Policy = "AdminOnly")]
 		[HttpDelete("delete-user/{id}")]
 		public async Task<IActionResult> DeleteUser(int id)
 		{
 			var success = await _userDao.DeleteUserAsync(id);
-			if (!success) return BadRequest("Không thể xóa user.");
-			return Ok("Xóa thành công hoặc đã bị chặn.");
+			if (!success) return BadRequest("Không thể xóa user (user has posts, comments, or likes).");
+			return Ok("User deleted.");
 		}
 
 		[HttpGet("{id}")]
@@ -277,6 +295,13 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		public async Task<IActionResult> GetAll()
 		{
 			return Ok(await _userDao.GetAllAsync());
+		}
+
+		[HttpGet("search")]
+		public async Task<IActionResult> SearchUsers([FromQuery] string query)
+		{
+			var users = await _userDao.SearchUsersAsync(query);
+			return Ok(users);
 		}
 	}
 
