@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button, Typography, Chip, Avatar } from "@material-tailwind/react";
 import { HeartIcon, ChatBubbleLeftIcon, ShareIcon } from "@heroicons/react/24/outline";
-import { getPostById } from "@/lib/api";
+import { getPostById, isPostLiked, toggleLikePost } from "@/lib/api";
 import { Post } from "@/components/types/post";
 import Link from "next/link";
 
@@ -18,6 +18,7 @@ export default function Content({ postId }: Readonly<ContentProps>) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -27,6 +28,7 @@ export default function Content({ postId }: Readonly<ContentProps>) {
         if (data) {
           setPost(data);
           setError(null);
+          setLikeCount(data.likeCount);
         } else {
           setError("Post not found");
         }
@@ -40,9 +42,18 @@ export default function Content({ postId }: Readonly<ContentProps>) {
     fetchPost();
   }, [postId]);
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    // TODO: Implement API call to like/unlike post
+  useEffect(() => {
+    isPostLiked(Number(postId)).then(setIsLiked).catch(() => setIsLiked(false));
+  }, [postId]);
+
+  const handleLike = async () => {
+    try {
+      const liked = await toggleLikePost(Number(postId));
+      setIsLiked(liked);
+      setLikeCount((prev) => prev + (liked ? 1 : -1));
+    } catch (e) {
+      // handle error, maybe show login
+    }
   };
 
   const handleShare = () => {
@@ -176,7 +187,7 @@ export default function Content({ postId }: Readonly<ContentProps>) {
               color={isLiked ? "red" : "gray"}
             >
               <HeartIcon className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
-              Like ({post.likeCount + (isLiked ? 1 : 0)})
+              Like ({likeCount})
             </Button>
             <Button
               variant="outlined"

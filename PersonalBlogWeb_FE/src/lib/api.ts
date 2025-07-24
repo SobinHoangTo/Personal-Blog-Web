@@ -628,3 +628,31 @@ export async function restorePost(postId: number) {
   if (!res.ok) throw new Error("Failed to restore post");
   return true;
 }
+
+// Like API
+export async function isPostLiked(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Like/is-liked-post?postId=${postId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to check like status");
+  const data = await res.json();
+  return data.isLiked;
+}
+
+export async function toggleLikePost(postId: number) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/Like`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ postId }),
+  });
+  if (!res.ok) throw new Error("Failed to toggle like");
+  const data = await res.json();
+  return data.message === "Liked";
+}

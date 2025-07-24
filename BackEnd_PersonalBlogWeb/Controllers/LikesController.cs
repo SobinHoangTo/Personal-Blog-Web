@@ -93,6 +93,39 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return Ok(new { message = isLiked ? "Liked" : "Unliked" });
 		}
 
+		[HttpGet("is-liked")]
+		[Authorize]
+		public async Task<IActionResult> IsLiked([FromQuery] int? postId, [FromQuery] int? commentId)
+		{
+			if (IsBlocked) return Forbid();
+			if (!CurrentUserId.HasValue) return Unauthorized();
+
+			var isLiked = await _likeDao.IsLikedAsync(CurrentUserId.Value, postId, commentId);
+			return Ok(new { isLiked });
+		}
+
+		[HttpGet("is-liked-post")]
+		[Authorize]
+		public async Task<IActionResult> IsLikedPost([FromQuery] int postId)
+		{
+			if (IsBlocked) return Forbid();
+			if (!CurrentUserId.HasValue) return Unauthorized();
+
+			var isLiked = await _likeDao.IsLikedPostAsync(CurrentUserId.Value, postId);
+			return Ok(new { isLiked });
+		}
+
+		[HttpGet("is-liked-comment")]
+		[Authorize]
+		public async Task<IActionResult> IsLikedComment([FromQuery] int commentId)
+		{
+			if (IsBlocked) return Forbid();
+			if (!CurrentUserId.HasValue) return Unauthorized();
+
+			var isLiked = await _likeDao.IsLikedCommentAsync(CurrentUserId.Value, commentId);
+			return Ok(new { isLiked });
+		}
+
 	}
 
 }
