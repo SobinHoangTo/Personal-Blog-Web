@@ -4,12 +4,13 @@ import React from "react";
 
 const CKEditorDynamic = dynamic(
   async () => {
-    const [CKEditorModule, ClassicEditor] = await Promise.all([
+    const [{ CKEditor }, ClassicEditorModule] = await Promise.all([
       import("@ckeditor/ckeditor5-react"),
       import("@ckeditor/ckeditor5-build-classic"),
     ]);
+    const ClassicEditor = ClassicEditorModule.default || ClassicEditorModule;
     return function CKEditorWrapper(props: any) {
-      return <CKEditorModule.CKEditor editor={ClassicEditor} {...props} />;
+      return <CKEditor editor={ClassicEditor} {...props} />;
     };
   },
   { ssr: false }
