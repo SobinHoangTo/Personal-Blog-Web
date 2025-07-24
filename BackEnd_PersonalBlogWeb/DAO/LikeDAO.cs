@@ -14,6 +14,21 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 			_context = context;
 		}
 
+
+		public async Task<bool> IsLikedPostAsync(int userId, int postId)
+		{
+			return await _context.Likes.AnyAsync(l =>
+				l.UserId == userId &&
+				l.PostId == postId);
+		}
+
+		public async Task<bool> IsLikedCommentAsync(int userId, int commentId)
+		{
+			return await _context.Likes.AnyAsync(l =>
+				l.UserId == userId &&
+				l.CommentId == commentId);
+		}
+
 		public async Task<bool> ToggleLikeAsync(int userId, LikeDto dto)
 		{
 			// Kiểm tra target là post hay comment
