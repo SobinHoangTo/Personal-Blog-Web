@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Select, Option, Typography } from "@material-tailwind/react";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import CKEditorClient from "@/components/common/CKEditorClient";
 import { getAllCategories, createPost } from "@/lib/api";
 import { useAuth } from "@/components/context/AuthContext";
 
@@ -49,10 +48,6 @@ export default function CreatePostForm({ userId, onPostCreated }: CreatePostForm
         status: 0 // pending
       });
       setSuccess("Post created and pending approval.");
-      setTitle("");
-      setContent("");
-      setCategoryId("");
-      setCoverImage("");
       if (onPostCreated) onPostCreated();
     } catch (err: any) {
       setError(err.message || "Failed to create post.");
@@ -101,10 +96,19 @@ export default function CreatePostForm({ userId, onPostCreated }: CreatePostForm
           <Typography variant="small" color="gray" className="mb-2">
             Content *
           </Typography>
-          <CKEditor
-            editor={ClassicEditor as any}
+          <CKEditorClient
             data={content}
-            onChange={(_: any, editor: { getData: () => React.SetStateAction<string>; }) => setContent(editor.getData())}
+            onChange={(_: any, editor: any) => setContent(editor.getData())}
+            config={{
+              toolbar: [
+                'heading', '|',
+                'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                'outdent', 'indent', '|',
+                'blockQuote', 'insertTable', '|',
+                'undo', 'redo'
+              ],
+              placeholder: "Write your post content here..."
+            }}
           />
         </div>
 

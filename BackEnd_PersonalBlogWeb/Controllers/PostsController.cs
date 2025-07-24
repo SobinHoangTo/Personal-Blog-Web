@@ -26,6 +26,18 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return Ok(posts);
 		}
 
+		// GET: api/Posts/admin
+		[HttpGet("admin")]
+		public async Task<IActionResult> GetPostsForAdmin()
+		{
+			var posts = await _PostDao.GetPostsForAdminAsync();
+			if (posts == null || !posts.Any())
+			{
+				return NotFound(new { message = "No posts found for admin." });
+			}
+			return Ok(posts);
+		}
+
 		// GET: api/Posts/5
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetPost(int id)
@@ -139,6 +151,33 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return results == null || !results.Any()
 				? NotFound(new { message = "No posts found matching criteria" })
 				: Ok(results);
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("{id}/approve")]
+		public async Task<IActionResult> ApprovePost(int id)
+		{
+			var success = await _PostDao.ApprovePostAsync(id);
+			if (!success) return NotFound("Post not found");
+			return Ok("Post approved");
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("{id}/reject")]
+		public async Task<IActionResult> RejectPost(int id)
+		{
+			var success = await _PostDao.RejectPostAsync(id);
+			if (!success) return NotFound("Post not found");
+			return Ok("Post rejected");
+		}
+
+		[Authorize(Policy = "AdminOnly")]
+		[HttpPut("{id}/restore")]
+		public async Task<IActionResult> RestorePost(int id)
+		{
+			var success = await _PostDao.RestorePostAsync(id);
+			if (!success) return NotFound("Post not found");
+			return Ok("Post restored");
 		}
 	}
 }

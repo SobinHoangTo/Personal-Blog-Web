@@ -51,7 +51,6 @@ export function BlogPostCard({
   likeCount = 0,
   commentCount = 0,
   currentUser,
-  postAuthor,
   onEdit,
   onDelete,
 }: Readonly<BlogPostCardExtendedProps>) {

@@ -28,7 +28,7 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		protected bool IsAdmin => CurrentUserRole == 0;
 		protected bool IsStaff => CurrentUserRole == 2;
 		protected bool IsAuthor => CurrentUserRole == 1;
-		protected bool IsBlocked => CurrentUserRole == 99;
+		protected bool IsBlocked => CurrentUserRole > 90;
 
 		protected bool IsOwner(int? resourceOwnerId)
 		{

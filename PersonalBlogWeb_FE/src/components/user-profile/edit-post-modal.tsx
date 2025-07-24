@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Typography, Dialog, DialogBody, DialogFooter, DialogHeader, Select, Option } from "@material-tailwind/react";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import CKEditorClient from "@/components/common/CKEditorClient";
 import { updatePost, getAllCategories } from "@/lib/api";
 
 interface EditPostModalProps {
@@ -130,10 +129,9 @@ export default function EditPostModal({ isOpen, onClose, post, onPostUpdated }: 
               Content
             </Typography>
             <div className="border border-gray-300 rounded-lg">
-              <CKEditor
-                editor={ClassicEditor as any}
+              <CKEditorClient
                 data={formData.content}
-                onChange={(event, editor) => {
+                onChange={(event: any, editor: any) => {
                   const data = editor.getData();
                   handleInputChange("content", data);
                 }}

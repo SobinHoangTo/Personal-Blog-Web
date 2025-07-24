@@ -31,7 +31,7 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 		public async Task<List<UserResponse>> GetAllAsync()
 		{
 			return await _context.Users
-				.Where(u => u.Role != 99) // exclude deleted/locked users
+				.Where(u => u.Role != 0) // exclude deleted/locked users
 				.Select(u => new UserResponse
 				{
 					Id = u.Id,
@@ -53,7 +53,7 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 		public async Task<User?> LoginAsync(string username, string password)
 		{
 			var user = await GetByUsernameAsync(username);
-			if (user == null || user.Role == 99) return null;
+			if (user == null || user.Role > 90) return null;
 
 			return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash) ? user : null;
 		}
@@ -128,6 +128,27 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 			return true;
 		}
 
+		// Ban user
+		public async Task<bool> BanUserAsync(int id)
+		{
+			var user = await GetByIdAsync(id);
+			if (user == null || user.Role == 0) return false; // do not allow admin
+			user.Role = (user.Role ?? 1) + 90;
+			await _context.SaveChangesAsync();
+			return true;
+		}
+
+		// Unban user (role - 90)
+		public async Task<bool> UnbanUserAsync(int id)
+		{
+			var user = await GetByIdAsync(id);
+			if (user == null || user.Role == 0) return false; // do not allow admin
+			user.Role = (user.Role ?? 91) - 90;
+			await _context.SaveChangesAsync();
+			return true;
+		}
+
+		// Permanently delete user if no posts/comments/likes
 		public async Task<bool> DeleteUserAsync(int id)
 		{
 			var user = await GetByIdAsync(id);
@@ -139,15 +160,33 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 
 			if (hasPosts || hasComments || hasLikes)
 			{
-				user.Role = 99; // mark as deleted/locked
+				return false; // cannot delete
 			}
-			else
-			{
-				_context.Users.Remove(user);
-			}
-
+			_context.Users.Remove(user);
 			await _context.SaveChangesAsync();
 			return true;
+		}
+
+		public async Task<List<UserResponse>> SearchUsersAsync(string query)
+		{
+			query = query?.ToLower() ?? "";
+			return await _context.Users
+				.Where(u => u.Role != 0 && (
+					u.Username.ToLower().Contains(query) ||
+					u.Email.ToLower().Contains(query) ||
+					u.FullName.ToLower().Contains(query)
+				))
+				.Select(u => new UserResponse
+				{
+					Id = u.Id,
+					Username = u.Username,
+					FullName = u.FullName,
+					Email = u.Email,
+					Avatar = u.Avatar,
+					Bio = u.Bio,
+					Role = u.Role
+				})
+				.ToListAsync();
 		}
 	}
 }

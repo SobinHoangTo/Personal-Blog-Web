@@ -28,6 +28,7 @@ export type Post = {
   likeCount: number;
   commentCount: number;
   isLiked?: boolean;
+  status: number;
 };
 
 export type BlogPostCardProps = {

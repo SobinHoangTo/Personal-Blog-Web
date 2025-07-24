@@ -34,7 +34,34 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 					CreatedDate = p.CreatedDate,
 					CategoryName = p.Category.Name,
 					LikeCount = p.Likes.Count,
-					CommentCount = p.Comments.Count
+					CommentCount = p.Comments.Count,
+					Status = p.Status
+				})
+				.ToListAsync();
+		}
+
+		public async Task<IEnumerable<PostDto>> GetPostsForAdminAsync()
+		{
+			return await _context.Posts
+				.Include(p => p.Author)
+				.Include(p => p.Category)
+				.Include(p => p.Likes)
+				.Include(p => p.Comments)
+				.OrderByDescending(p => p.CreatedDate)
+				.Select(p => new PostDto
+				{
+					Id = p.Id,
+					Title = p.Title,
+					Content = p.Content,
+					CoverImage = p.CoverImage,
+					AuthorID = p.AuthorId,
+					AuthorName = p.Author.FullName,
+					AuthorAvatar = p.Author.Avatar,
+					CreatedDate = p.CreatedDate,
+					CategoryName = p.Category.Name,
+					LikeCount = p.Likes.Count,
+					CommentCount = p.Comments.Count,
+					Status = p.Status
 				})
 				.ToListAsync();
 		}
@@ -60,7 +87,7 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 				AuthorName = c.User.FullName,
 				AuthorAvatar = c.User.Avatar,
 				ParentCommentId = c.ParentCommentId,
-				Replies = new List<CommentDto>() // Tạm thời để rỗng
+				Replies = new List<CommentDto>(),
 			}).ToList();
 
 			// Dựng cây cha-con
@@ -86,7 +113,8 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 				CategoryName = post.Category?.Name,
 				LikeCount = post.Likes.Count,
 				CommentCount = post.Comments.Count,
-				Comments = rootComments
+				Comments = rootComments,
+				Status = post.Status
 			};
 		}
 
@@ -122,7 +150,8 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 					CreatedDate = p.CreatedDate,
 					CategoryName = p.Category.Name,
 					LikeCount = p.Likes.Count,
-					CommentCount = p.Comments.Count
+					CommentCount = p.Comments.Count,
+					Status = p.Status
 				})
 				.ToListAsync();
 		}
@@ -147,7 +176,8 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 					CreatedDate = p.CreatedDate,
 					CategoryName = p.Category.Name,
 					LikeCount = p.Likes.Count,
-					CommentCount = p.Comments.Count
+					CommentCount = p.Comments.Count,
+					Status = p.Status
 				})
 				.ToListAsync();
 		}
@@ -189,7 +219,8 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 					CreatedDate = p.CreatedDate,
 					CategoryName = p.Category.Name,
 					LikeCount = p.Likes.Count,
-					CommentCount = p.Comments.Count
+					CommentCount = p.Comments.Count,
+					Status = p.Status
 				})
 				.ToListAsync();
 		}
@@ -257,6 +288,48 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 			}
 
 			post.Status = 99; // Status = 99 means deleted/hidden
+			await _context.SaveChangesAsync();
+
+			return true;
+		}
+
+		public async Task<bool> ApprovePostAsync(int id)
+		{
+			var post = await _context.Posts.FindAsync(id);
+			if (post == null)
+			{
+				return false;
+			}
+
+			post.Status = 1;
+			await _context.SaveChangesAsync();
+
+			return true;
+		}
+
+		public async Task<bool> RejectPostAsync(int id)
+		{
+			var post = await _context.Posts.FindAsync(id);
+			if (post == null)
+			{
+				return false;
+			}
+
+			post.Status = 99;
+			await _context.SaveChangesAsync();
+
+			return true;
+		}
+
+		public async Task<bool> RestorePostAsync(int id)
+		{
+			var post = await _context.Posts.FindAsync(id);
+			if (post == null)
+			{
+				return false;
+			}
+
+			post.Status = 1;
 			await _context.SaveChangesAsync();
 
 			return true;
