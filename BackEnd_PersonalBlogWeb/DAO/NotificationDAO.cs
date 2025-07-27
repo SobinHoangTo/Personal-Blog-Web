@@ -14,7 +14,7 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 			_context = context;
 		}
 
-		public async Task CreateNotificationAsync(int? userId, string message)
+		public async Task<Notification> CreateNotificationAsync(int? userId, string message)
 		{
 			var noti = new Notification
 			{
@@ -24,6 +24,7 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 
 			_context.Notifications.Add(noti);
 			await _context.SaveChangesAsync();
+			return noti;
 		}
 
 		public async Task<List<NotificationDto>> GetUnreadNotificationsAsync(int userId)
@@ -64,6 +65,20 @@ namespace Project_PRN232_PersonalBlogWeb.DAO
 			}
 
 			await _context.SaveChangesAsync();
+		}
+
+		public async Task<List<NotificationDto>> GetAllNotificationsAsync(int userId)
+		{
+			return await _context.Notifications
+				.Where(n => n.UserId == userId)
+				.OrderByDescending(n => n.Id)
+				.Select(n => new NotificationDto
+				{
+					Id = n.Id,
+					Message = n.Message,
+					IsRead = n.IsRead,
+				})
+				.ToListAsync();
 		}
 	}
 

@@ -126,8 +126,21 @@ export default function AdminAccountsPage() {
   return (
     <div className="max-w-3xl mx-auto py-8">
       <Typography variant="h3" className="mb-6">Account Management</Typography>
+      
+
+      {/* Create Staff Account Form*/}
+      <form onSubmit={handleCreate} className="mb-8 space-y-4">
+        <Typography variant="h5">Create Staff Account</Typography>
+        <Input label="Username" name="username" value={form.username} onChange={handleInputChange} required />
+        <Input label="Full Name" name="fullName" value={form.fullName} onChange={handleInputChange} required />
+        <Input label="Email" name="email" value={form.email} onChange={handleInputChange} required />
+        <Input label="Password" name="password" type="password" value={form.password} onChange={handleInputChange} required />
+        <Button type="submit" color="blue">Create Staff</Button>
+        {success && <Typography color="green">{success}</Typography>}
+      </form>
+
       {/* Search Bar & Role Filter */}
-      <form onSubmit={handleSearch} className="mb-6 flex flex-col md:flex-row gap-2 items-center">
+      <form onSubmit={handleSearch} className="pt-2 m-6 flex flex-col md:flex-row gap-2 items-center">
         <Input
           label="Search by username, email, or name"
           value={search}
@@ -147,17 +160,6 @@ export default function AdminAccountsPage() {
         </Select>
         <Button type="submit" color="blue" disabled={searching}>Search</Button>
         {search && <Button type="button" color="gray" onClick={handleClearSearch}>Clear</Button>}
-      </form>
-
-      {/* Create Staff Account Form*/}
-      <form onSubmit={handleCreate} className="mb-8 space-y-4">
-        <Typography variant="h5">Create Staff Account</Typography>
-        <Input label="Username" name="username" value={form.username} onChange={handleInputChange} required />
-        <Input label="Full Name" name="fullName" value={form.fullName} onChange={handleInputChange} required />
-        <Input label="Email" name="email" value={form.email} onChange={handleInputChange} required />
-        <Input label="Password" name="password" type="password" value={form.password} onChange={handleInputChange} required />
-        <Button type="submit" color="blue">Create Staff</Button>
-        {success && <Typography color="green">{success}</Typography>}
       </form>
 
       {/* Accounts List */}

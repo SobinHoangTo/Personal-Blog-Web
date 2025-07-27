@@ -4,7 +4,7 @@ import React from "react";
 import { Alert } from "@material-tailwind/react";
 
 interface UserProfileErrorProps {
-  error: string;
+  readonly error: string;
 }
 
 export default function UserProfileError({ error }: UserProfileErrorProps) {

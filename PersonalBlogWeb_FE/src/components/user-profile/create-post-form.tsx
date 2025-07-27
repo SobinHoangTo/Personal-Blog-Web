@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Select, Option, Typography } from "@material-tailwind/react";
+import { Button, Input, Select, Option, Typography, Alert } from "@material-tailwind/react";
 import CKEditorClient from "@/components/common/CKEditorClient";
 import { getAllCategories, createPost } from "@/lib/api";
 import { useAuth } from "@/components/context/AuthContext";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 interface CreatePostFormProps {
   readonly userId: number;
@@ -18,6 +19,7 @@ export default function CreatePostForm({ userId, onPostCreated }: CreatePostForm
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showApprovalAlert, setShowApprovalAlert] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -47,7 +49,18 @@ export default function CreatePostForm({ userId, onPostCreated }: CreatePostForm
         coverImage: coverImage || undefined,
         status: 0 // pending
       });
-      setSuccess("Post created and pending approval.");
+      setSuccess("Post created successfully! Wait for Admin to approve your post.");
+      
+      // Show approval alert for 5 seconds
+      setShowApprovalAlert(true);
+      setTimeout(() => setShowApprovalAlert(false), 5000);
+      
+      // Reset form
+      setTitle("");
+      setContent("");
+      setCategoryId("");
+      setCoverImage("");
+      
       if (onPostCreated) onPostCreated();
     } catch (err: any) {
       setError(err.message || "Failed to create post.");
@@ -58,6 +71,28 @@ export default function CreatePostForm({ userId, onPostCreated }: CreatePostForm
 
   return (
     <div className="max-w-4xl mx-auto px-4">
+      {/* Approval Alert - Fixed position at top */}
+      {showApprovalAlert && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md">
+          <Alert
+            color="green"
+            icon={<CheckCircleIcon className="h-6 w-6" />}
+            className="shadow-lg border border-green-200"
+            animate={{
+              mount: { y: 0, opacity: 1 },
+              unmount: { y: -100, opacity: 0 },
+            }}
+          >
+            <Typography variant="h6" color="white" className="font-medium">
+              Post Created Successfully!
+            </Typography>
+            <Typography variant="small" color="white" className="mt-1 opacity-90">
+              Wait for Admin to approve your post before it appears publicly.
+            </Typography>
+          </Alert>
+        </div>
+      )}
+      
       <form className="bg-white p-8 rounded-lg shadow-lg mb-8" onSubmit={handleSubmit}>
         <Typography variant="h5" className="mb-6 text-center">Create New Post</Typography>
         

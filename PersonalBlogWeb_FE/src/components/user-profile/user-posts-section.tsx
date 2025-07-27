@@ -46,6 +46,7 @@ export default function UserPostsSection({ user, posts }: UserPostsSectionProps)
       await softDeletePost(postId);
       setPostList(postList.filter(p => p.id !== postId));
     } catch (error) {
+      console.error("Failed to delete post:", error);
       alert("Failed to delete post");
     }
   };

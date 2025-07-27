@@ -81,36 +81,6 @@ export function Comments({ postId }: CommentsProps) {
     setComments(prev => [newComment, ...prev]);
   };
 
-  const handleCommentLike = (commentId: number) => {
-    // TODO: Implement like functionality with API
-    setComments(prev => prev.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          isLiked: !comment.isLiked,
-          likeCount: comment.isLiked ? comment.likeCount - 1 : comment.likeCount + 1
-        };
-      }
-      // Check replies
-      return {
-        ...comment,
-        replies: comment.replies.map(reply => 
-          reply.id === commentId 
-            ? {
-                ...reply,
-                isLiked: !reply.isLiked,
-                likeCount: reply.isLiked ? reply.likeCount - 1 : reply.likeCount + 1
-              }
-            : reply
-        )
-      };
-    }));
-  };
-
-  const handleCommentReply = (commentId: number) => {
-    // TODO: Implement reply functionality
-    console.log("Reply to comment:", commentId);
-  };
 
   if (loading) {
     return (

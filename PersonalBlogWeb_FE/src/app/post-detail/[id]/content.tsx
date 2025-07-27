@@ -52,7 +52,7 @@ export default function Content({ postId }: Readonly<ContentProps>) {
       setIsLiked(liked);
       setLikeCount((prev) => prev + (liked ? 1 : -1));
     } catch (e) {
-      // handle error, maybe show login
+      console.error("Error liking post:", e);
     }
   };
 
@@ -104,11 +104,6 @@ export default function Content({ postId }: Readonly<ContentProps>) {
     });
   };
 
-  // Helper function to strip HTML tags from content
-  const stripHtmlTags = (html: string): string => {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return doc.body.textContent || "";
-  };
 
   return (
     <section className="py-12 px-8">

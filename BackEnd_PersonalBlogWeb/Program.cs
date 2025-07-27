@@ -15,7 +15,7 @@ using System.Text.Json.Serialization;
 
 namespace Project_PRN232_PersonalBlogWeb
 {
-	public class Program
+	public static class Program
 	{
 		public static void Main(string[] args)
 		{
@@ -43,7 +43,7 @@ namespace Project_PRN232_PersonalBlogWeb
 			builder.Services.AddDbContext<PersonalBlogWebContext>(options =>
 				options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-			// Add CORS
+// Add CORS
 			// builder.Services.AddCors(options =>
 			// {
 			// 	options.AddPolicy("AllowLocalhost", builder =>
@@ -55,6 +55,7 @@ namespace Project_PRN232_PersonalBlogWeb
 			// 			.AllowCredentials();
 			// 	});
 			// });
+
 			builder.Services.AddCors(options =>
 			{
 				options.AddDefaultPolicy(policy =>
@@ -195,7 +196,7 @@ namespace Project_PRN232_PersonalBlogWeb
 			app.UseHttpsRedirection();
 			app.UseRouting();
 
-			app.UseCors(); // trước app.UseAuthorization();
+			app.UseCors();
 			app.UseSession(); // Add session middleware for cookies
 			app.UseAuthentication();
 			app.UseAuthorization();
@@ -203,7 +204,7 @@ namespace Project_PRN232_PersonalBlogWeb
 			app.MapControllers();
 
 			// app.MapHub<YourHub>("/your-hub"); // optional SignalR hub
-			app.MapHub<NotificationHub>("/hub/notification");
+			// app.MapHub<NotificationHub>("/hub/notification");
 
 			app.Run();
 		}

@@ -7,9 +7,10 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { User } from "@/components/types/auth";
-import { UserIcon, CalendarIcon, PencilIcon, EnvelopeIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { UserIcon, CalendarIcon, PencilIcon, EnvelopeIcon, UserCircleIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/components/context/AuthContext";
 import EditProfileModal from "./edit-profile-modal";
+import ChangePasswordModal from "./change-password-modal";
 
 interface UserProfileHeaderProps {
   readonly user: User;
@@ -21,10 +22,11 @@ export default function UserProfileHeader({ user, userId, postsCount }: UserProf
   const { user: currentUser } = useAuth();
   const [userProfile, setUserProfile] = useState(user);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const isOwnProfile = currentUser?.id === userId;
 
-  // Debug log for currentUser?.userID
-  console.log('currentUser?.userID:', currentUser?.userID, 'userId:', userId);
+  // Debug log for currentUser?.id
+  console.log('currentUser?.id:', currentUser?.id, 'userId:', userId);
 
   useEffect(() => {
     setUserProfile(user);
@@ -73,6 +75,16 @@ export default function UserProfileHeader({ user, userId, postsCount }: UserProf
                       <UserCircleIcon className="h-4 w-4" />
                       Edit Profile
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outlined"
+                      color="gray"
+                      className="flex items-center gap-2"
+                      onClick={() => setIsChangePasswordOpen(true)}
+                    >
+                      <KeyIcon className="h-4 w-4" />
+                      Change Password
+                    </Button>
                   </div>
                 )}
               </div>
@@ -119,6 +131,12 @@ export default function UserProfileHeader({ user, userId, postsCount }: UserProf
         isOpen={isEditProfileOpen}
         onClose={() => setIsEditProfileOpen(false)}
         onProfileUpdated={handleProfileUpdated}
+        user={userProfile}
+      />
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
         user={userProfile}
       />
     </>

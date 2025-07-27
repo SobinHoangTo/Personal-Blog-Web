@@ -11,12 +11,12 @@ import Link from "next/link";
 
 
 interface BlogPostCardProps {
-  img: string;
-  tag: string;
-  title: string;
-  desc: string;
-  author: { name: string; img: string; id: number };
-  date: string;
+  readonly img: string;
+  readonly tag: string;
+  readonly title: string;
+  readonly desc: string;
+  readonly author: { readonly name: string; readonly img: string; readonly id: number };
+  readonly date: string;
 }
 
 export function BlogPostCard({

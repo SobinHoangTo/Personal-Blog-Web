@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Project_PRN232_PersonalBlogWeb.DAO;
 using Project_PRN232_PersonalBlogWeb.DTO;
-using Project_PRN232_PersonalBlogWeb.Hubs;
 using Project_PRN232_PersonalBlogWeb.Models;
 
 namespace Project_PRN232_PersonalBlogWeb.Controllers
@@ -22,16 +21,14 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		private readonly PostDAO _postDao;
 		private readonly CommentDAO _commentDao;
 		private readonly NotificationDAO _notificationDao;
-		private readonly IHubContext<NotificationHub> _hubContext;
 
 		public LikeController(LikeDAO likeDao, PostDAO postDao, CommentDAO commentDao,
-			NotificationDAO notificationDao, IHubContext<NotificationHub> hubContext)
+			NotificationDAO notificationDao)
 		{
 			_likeDao = likeDao;
 			_postDao = postDao;
 			_commentDao = commentDao;
 			_notificationDao = notificationDao;
-			_hubContext = hubContext;
 		}
 
 		[HttpPost]
@@ -58,8 +55,6 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 					}
 
 					// Gửi realtime cập nhật số like bài viết
-					await _hubContext.Clients.Group($"post_{dto.PostId}")
-						.SendAsync("PostUpdated", new { postId = dto.PostId, action = "like" });
 				}
 				else if (dto.CommentId.HasValue)
 				{
@@ -73,20 +68,12 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 						}
 
 						// Gửi realtime cập nhật số like bình luận
-						await _hubContext.Clients.Group($"post_{comment.PostId}")
-							.SendAsync("CommentUpdated", new
-							{
-								commentId = comment.Id,
-								action = "like"
-							});
 					}
 				}
 
 				if (receiverId.HasValue && message != null)
 				{
 					await _notificationDao.CreateNotificationAsync(receiverId.Value, message);
-					await _hubContext.Clients.Group($"user_{receiverId}")
-						.SendAsync("ReceiveNotification", new { message });
 				}
 			}
 

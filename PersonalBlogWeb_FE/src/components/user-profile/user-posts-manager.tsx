@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardBody, Typography, Button, Chip, Menu, MenuHandler, MenuList, MenuItem, IconButton } from "@material-tailwind/react";
+import { Card, CardBody, Typography, Chip, Menu, MenuHandler, MenuList, MenuItem, IconButton } from "@material-tailwind/react";
 import { EllipsisVerticalIcon, EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Post } from "@/components/types/post";
 import { getUserPosts, softDeletePost } from "@/lib/api";
@@ -26,7 +26,7 @@ export default function UserPostsManager({ userId }: UserPostsManagerProps) {
   const [editingPost, setEditingPost] = useState<PostWithStatus | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { user } = useAuth();
-  const isOwnProfile = user?.userID === userId;
+  const isOwnProfile = user?.id === userId;
   const isAdmin = user?.role === "1"; // Admin role
   const isStaff = user?.role === "2"; // Staff role
 
@@ -91,11 +91,11 @@ export default function UserPostsManager({ userId }: UserPostsManagerProps) {
   };
 
   const canEditPost = (post: PostWithStatus) => {
-    return isOwnProfile && post.authorID === user?.userID;
+    return isOwnProfile && post.authorID === user?.id;
   };
 
   const canDeletePost = (post: PostWithStatus) => {
-    return isOwnProfile && post.authorID === user?.userID || isAdmin || isStaff;
+    return isOwnProfile && post.authorID === user?.id || isAdmin || isStaff;
   };
 
   const truncateContent = (content: string, maxLength: number = 150) => {

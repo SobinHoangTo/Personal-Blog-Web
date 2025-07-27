@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Typography, Dialog, DialogBody, DialogFooter, DialogHeader, Select, Option } from "@material-tailwind/react";
+import { Button, Input, Typography, Dialog, DialogBody, DialogFooter, DialogHeader, Select, Option, Alert } from "@material-tailwind/react";
 import CKEditorClient from "@/components/common/CKEditorClient";
 import { updatePost, getAllCategories } from "@/lib/api";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 interface EditPostModalProps {
   readonly isOpen: boolean;
@@ -20,6 +21,7 @@ export default function EditPostModal({ isOpen, onClose, post, onPostUpdated }: 
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showApprovalAlert, setShowApprovalAlert] = useState(false);
 
   useEffect(() => {
     if (post) {
@@ -59,8 +61,15 @@ export default function EditPostModal({ isOpen, onClose, post, onPostUpdated }: 
         ...formData,
         categoryId: formData.categoryId ?? 1,
       });
-      onPostUpdated(updatedPost);
-      onClose();
+      
+      // Show approval alert for 3 seconds then close modal
+      setShowApprovalAlert(true);
+      setTimeout(() => {
+        setShowApprovalAlert(false);
+        onPostUpdated(updatedPost);
+        onClose();
+      }, 3000);
+      
     } catch (err: any) {
       setError(err.message || "Failed to update post");
     } finally {
@@ -73,12 +82,35 @@ export default function EditPostModal({ isOpen, onClose, post, onPostUpdated }: 
   };
 
   return (
-    <Dialog 
-      open={isOpen} 
-      handler={onClose} 
-      size="xl"
-      className="max-h-[90vh] overflow-y-auto"
-    >
+    <>
+      {/* Approval Alert - Fixed position overlay */}
+      {showApprovalAlert && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+          <Alert
+            color="green"
+            icon={<CheckCircleIcon className="h-6 w-6" />}
+            className="max-w-md shadow-xl border border-green-200"
+            animate={{
+              mount: { scale: 1, opacity: 1 },
+              unmount: { scale: 0.9, opacity: 0 },
+            }}
+          >
+            <Typography variant="h6" color="white" className="font-medium">
+              Post Updated Successfully!
+            </Typography>
+            <Typography variant="small" color="white" className="mt-1 opacity-90">
+              Wait for Admin to approve your post before changes appear publicly.
+            </Typography>
+          </Alert>
+        </div>
+      )}
+      
+      <Dialog 
+        open={isOpen} 
+        handler={onClose} 
+        size="xl"
+        className="max-h-[90vh] overflow-y-auto"
+      >
       <DialogHeader
       >
         Edit Post
@@ -116,7 +148,7 @@ export default function EditPostModal({ isOpen, onClose, post, onPostUpdated }: 
               value={(formData.categoryId ?? 1).toString()}
               onChange={(value) => handleInputChange("categoryId", parseInt(value || "1"))}
             >
-              {categories.filter(category => category && category.id != null).map((category) => (
+              {categories.filter(category => category?.id != null).map((category) => (
                 <Option key={category.id} value={category.id.toString()}>
                   {category.name}
                 </Option>
@@ -160,5 +192,6 @@ export default function EditPostModal({ isOpen, onClose, post, onPostUpdated }: 
         </Button>
       </DialogFooter>
     </Dialog>
+    </>
   );
 }

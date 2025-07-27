@@ -5,7 +5,7 @@ import { Category } from "@/components/types/category";
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getAllPosts(): Promise<Post[]> {
-  const res = await fetch(`${BASE_URL}/Posts`);
+  const res = await fetch(`${BASE_URL}/api/Posts`);
 
   if (!res.ok) {
     console.error("Fetch error:", res.status, res.statusText);
@@ -31,7 +31,7 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 export async function getAllPostsForAdmin(): Promise<Post[]> {
-  const res = await fetch(`${BASE_URL}/Posts/admin`);
+  const res = await fetch(`${BASE_URL}/api/Posts/admin`);
   if (!res.ok) {
     throw new Error("Failed to fetch posts for admin");
   }
@@ -53,7 +53,7 @@ export async function getAllPostsForAdmin(): Promise<Post[]> {
 }
 
 export async function fetchPostById(id: number): Promise<Post> {
-  const res = await fetch(`${BASE_URL}/Posts/${id}`);
+  const res = await fetch(`${BASE_URL}/api/Posts/${id}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch post with id ${id}`);
   }
@@ -61,7 +61,7 @@ export async function fetchPostById(id: number): Promise<Post> {
 }
 
 export async function fetchPostsByCategory(category: string): Promise<Post[]> {
-  const res = await fetch(`${BASE_URL}/Posts?category=${category}`);
+  const res = await fetch(`${BASE_URL}/api/Posts?category=${category}`);
   if (!res.ok) {
     throw new Error(`Failed to fetch posts for category ${category}`);
   }
@@ -70,7 +70,7 @@ export async function fetchPostsByCategory(category: string): Promise<Post[]> {
 
 export async function getAllCategories() {
   try {
-    const res = await fetch(`${BASE_URL}/Categories`);
+    const res = await fetch(`${BASE_URL}/api/Categories`);
     if (!res.ok) throw new Error("Failed to fetch categories");
     return await res.json();
   } catch (error) {
@@ -81,7 +81,7 @@ export async function getAllCategories() {
 
 export async function getPostsByCategory(categoryId: number) {
   try {
-    const res = await fetch(`${BASE_URL}/Posts/category/${categoryId}`);
+    const res = await fetch(`${BASE_URL}/api/Posts/category/${categoryId}`);
     if (!res.ok) throw new Error("Failed to fetch posts by category");
     return await res.json();
   } catch (error) {
@@ -92,7 +92,7 @@ export async function getPostsByCategory(categoryId: number) {
 
 export async function getPostById(id: number) {
   try {
-    const res = await fetch(`${BASE_URL}/Posts/${id}`);
+    const res = await fetch(`${BASE_URL}/api/Posts/${id}`);
     if (!res.ok) throw new Error("Failed to fetch post");
     return await res.json();
   } catch (error) {
@@ -103,7 +103,7 @@ export async function getPostById(id: number) {
 
 export async function getPostComments(postId: number) {
   try {
-    const res = await fetch(`${BASE_URL}/Comment/post/${postId}`);
+    const res = await fetch(`${BASE_URL}/api/Comment/post/${postId}`);
     if (!res.ok) throw new Error("Failed to fetch comments");
     return await res.json();
   } catch (error) {
@@ -118,7 +118,7 @@ export async function createComment(
   parentCommentId?: number
 ) {
   try {
-    const res = await fetch(`${BASE_URL}/Comment`, {
+    const res = await fetch(`${BASE_URL}/api/Comment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export async function createComment(
 
 export async function getCommentLikes(commentId: number) {
   try {
-    const res = await fetch(`${BASE_URL}/Likes/comment/${commentId}`);
+    const res = await fetch(`${BASE_URL}/api/Likes/comment/${commentId}`);
     if (!res.ok) throw new Error("Failed to fetch comment likes");
     return await res.json();
   } catch (error) {
@@ -152,7 +152,7 @@ export async function getCommentLikes(commentId: number) {
 // Auth API functions
 export async function loginUser(username: string, password: string) {
   try {
-    const res = await fetch(`${BASE_URL}/Users/login`, {
+    const res = await fetch(`${BASE_URL}/api/Users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -177,7 +177,7 @@ export async function loginUser(username: string, password: string) {
 
 export async function registerUser(userData: any) {
   try {
-    const res = await fetch(`${BASE_URL}/Users/register`, {
+    const res = await fetch(`${BASE_URL}/api/Users/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -200,13 +200,13 @@ export async function registerUser(userData: any) {
 // Google OAuth login
 export function initiateGoogleLogin() {
   // Redirect to backend Google login endpoint
-  window.location.href = `${BASE_URL}/Users/google-login`;
+  window.location.href = `${BASE_URL}/api/Users/google-login`;
 }
 
 // User API functions
 export async function getUserById(userId: number) {
   try {
-    const res = await fetch(`${BASE_URL}/Users/${userId}`);
+    const res = await fetch(`${BASE_URL}/api/Users/${userId}`);
     if (!res.ok) throw new Error("Failed to fetch user");
     return await res.json();
   } catch (error) {
@@ -217,7 +217,7 @@ export async function getUserById(userId: number) {
 
 export async function getUserPosts(authorId: number) {
   try {
-    const res = await fetch(`${BASE_URL}/Posts/author/${authorId}`);
+    const res = await fetch(`${BASE_URL}/api/Posts/author/${authorId}`);
     if (!res.ok) throw new Error("Failed to fetch user posts");
     return await res.json();
   } catch (error) {
@@ -236,7 +236,7 @@ export async function createCommentAuth(
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authentication required");
 
-    const res = await fetch(`${BASE_URL}/Comment`, {
+    const res = await fetch(`${BASE_URL}/api/Comment`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -261,7 +261,7 @@ export async function likeComment(commentId: number) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authentication required");
 
-    const res = await fetch(`${BASE_URL}/Like`, {
+    const res = await fetch(`${BASE_URL}/api/Like`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -293,7 +293,7 @@ export async function likePost(postId: number) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authentication required");
 
-    const res = await fetch(`${BASE_URL}/Like`, {
+    const res = await fetch(`${BASE_URL}/api/Like`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -325,7 +325,7 @@ export async function updateComment(commentId: number, content: string) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authentication required");
 
-    const res = await fetch(`${BASE_URL}/Comment`, {
+    const res = await fetch(`${BASE_URL}/api/Comment`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -350,7 +350,7 @@ export async function deleteComment(commentId: number) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authentication required");
 
-    const res = await fetch(`${BASE_URL}/Comment/${commentId}`, {
+    const res = await fetch(`${BASE_URL}/api/Comment/${commentId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -380,7 +380,7 @@ export async function createPost({
 }) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Posts`, {
+  const res = await fetch(`${BASE_URL}/api/Posts`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -410,7 +410,7 @@ export async function updateUserProfile({
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
 
-  const res = await fetch(`${BASE_URL}/Users/update-profile`, {
+  const res = await fetch(`${BASE_URL}/api/Users/update-profile`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -431,7 +431,7 @@ export async function softDeletePost(postId: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
 
-  const res = await fetch(`${BASE_URL}/Posts/${postId}/soft-delete`, {
+  const res = await fetch(`${BASE_URL}/api/Posts/${postId}/soft-delete`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -455,7 +455,7 @@ export async function updatePost(
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
 
-  const res = await fetch(`${BASE_URL}/Posts/${postId}`, {
+  const res = await fetch(`${BASE_URL}/api/Posts/${postId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -475,7 +475,7 @@ export async function createCategory(category: {
 }) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Categories`, {
+  const res = await fetch(`${BASE_URL}/api/Categories`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -493,7 +493,7 @@ export async function updateCategory(
 ) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Categories/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/Categories/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -507,7 +507,7 @@ export async function updateCategory(
 }
 
 export async function fetchCategoryById(id: number): Promise<Category> {
-  const res = await fetch(`${BASE_URL}/Categories/${id}`);
+  const res = await fetch(`${BASE_URL}/api/Categories/${id}`);
   if (!res.ok) throw new Error("Failed to fetch category");
   return await res.json();
 }
@@ -516,7 +516,7 @@ export async function fetchCategoryById(id: number): Promise<Category> {
 export async function getAllAccounts() {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Users`, {
+  const res = await fetch(`${BASE_URL}/api/Users`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error("Failed to fetch accounts");
@@ -536,7 +536,7 @@ export async function createStaffAccount({
 }) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Users/create`, {
+  const res = await fetch(`${BASE_URL}/api/Users/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -551,7 +551,7 @@ export async function createStaffAccount({
 export async function banAccount(id: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Users/ban/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/Users/ban/${id}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -562,7 +562,7 @@ export async function banAccount(id: number) {
 export async function unbanAccount(id: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Users/unban/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/Users/unban/${id}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -573,7 +573,7 @@ export async function unbanAccount(id: number) {
 export async function deleteAccount(id: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Users/delete-user/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/Users/delete-user/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -585,7 +585,7 @@ export async function searchAccounts(query: string) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
   const res = await fetch(
-    `${BASE_URL}/Users/search?query=${encodeURIComponent(query)}`,
+    `${BASE_URL}/api/Users/search?query=${encodeURIComponent(query)}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }
@@ -599,7 +599,7 @@ export async function searchAccounts(query: string) {
 export async function approvePost(postId: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Posts/${postId}/approve`, {
+  const res = await fetch(`${BASE_URL}/api/Posts/${postId}/approve`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -610,7 +610,7 @@ export async function approvePost(postId: number) {
 export async function rejectPost(postId: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Posts/${postId}/reject`, {
+  const res = await fetch(`${BASE_URL}/api/Posts/${postId}/reject`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -621,7 +621,7 @@ export async function rejectPost(postId: number) {
 export async function restorePost(postId: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Posts/${postId}/restore`, {
+  const res = await fetch(`${BASE_URL}/api/Posts/${postId}/restore`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -633,9 +633,12 @@ export async function restorePost(postId: number) {
 export async function isPostLiked(postId: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Like/is-liked-post?postId=${postId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await fetch(
+    `${BASE_URL}/api/Like/is-liked-post?postId=${postId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   if (!res.ok) throw new Error("Failed to check like status");
   const data = await res.json();
   return data.isLiked;
@@ -644,7 +647,7 @@ export async function isPostLiked(postId: number) {
 export async function toggleLikePost(postId: number) {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Authentication required");
-  const res = await fetch(`${BASE_URL}/Like`, {
+  const res = await fetch(`${BASE_URL}/api/Like`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -655,4 +658,99 @@ export async function toggleLikePost(postId: number) {
   if (!res.ok) throw new Error("Failed to toggle like");
   const data = await res.json();
   return data.message === "Liked";
+}
+
+export async function getUnreadNotifications() {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/api/Notifications/unread`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch notifications");
+  return await res.json();
+}
+
+export async function markAllNotificationsRead() {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/api/Notifications/mark-all-read`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to mark notifications as read");
+  return await res.json();
+}
+
+export async function getAllNotifications() {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Authentication required");
+  const res = await fetch(`${BASE_URL}/api/Notifications/all`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Failed to fetch all notifications");
+  return await res.json();
+}
+
+export async function forgotPassword(email: string, newPassword: string) {
+  const res = await fetch(`${BASE_URL}/api/Users/forgot-password`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, newPassword }),
+  });
+  if (!res.ok) throw new Error("Failed to reset password");
+  return await res.json();
+}
+
+export async function searchPosts(keyword: string): Promise<Post[]> {
+  const res = await fetch(
+    `${BASE_URL}/api/Posts/search?keyword=${encodeURIComponent(keyword)}`
+  );
+  if (!res.ok) {
+    throw new Error("Failed to search posts");
+  }
+  const posts = await res.json();
+  return posts.map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    content: p.content,
+    coverImage: p.coverImage || "/blog_background.jpg",
+    createdDate: p.createdDate,
+    categoryName: p.categoryName,
+    likeCount: p.likeCount,
+    commentCount: p.commentCount,
+    authorID: p.authorID,
+    authorName: p.authorName,
+    authorAvatar: p.authorAvatar,
+    status: p.status,
+  }));
+}
+
+export async function changePassword({
+  oldPassword,
+  newPassword,
+}: {
+  oldPassword: string;
+  newPassword: string;
+}) {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("No authentication token");
+
+  const res = await fetch(`${BASE_URL}/api/Users/change-password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      oldPassword,
+      newPassword,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText || "Failed to change password");
+  }
+
+  return await res.text();
 }

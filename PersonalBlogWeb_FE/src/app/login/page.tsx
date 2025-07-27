@@ -12,7 +12,7 @@ import {
   Spinner
 } from "@material-tailwind/react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { loginUser } from "@/lib/api";
+import { loginUser, forgotPassword } from "@/lib/api";
 import { LoginResponse } from "@/components/types/auth";
 import { useAuth } from "@/components/context/AuthContext";
 import Link from "next/link";
@@ -28,6 +28,11 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState<string | null>(null);
   const router = useRouter();
   const { login } = useAuth();
 
@@ -69,6 +74,27 @@ export default function LoginPage() {
       setError(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handler for forgot password
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotMessage(null);
+    if (!forgotEmail || !forgotNewPassword) {
+      setForgotMessage("Please enter your email and new password.");
+      return;
+    }
+    try {
+      setForgotLoading(true);
+      await forgotPassword(forgotEmail, forgotNewPassword);
+      setForgotMessage("Password reset successful! You can now log in with your new password.");
+      setForgotEmail("");
+      setForgotNewPassword("");
+    } catch (err: any) {
+      setForgotMessage(err.message || "Failed to reset password.");
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -184,10 +210,45 @@ export default function LoginPage() {
             </Typography>
 
             <Typography color="gray" className="mt-2 text-center font-normal">
-              <Link href="/forgot-password" className="font-medium text-blue-500 hover:underline">
+              <button
+                type="button"
+                className="font-medium text-blue-500 hover:underline bg-transparent border-0 p-0"
+                onClick={() => setShowForgot((v) => !v)}
+              >
                 Forgot your password?
-              </Link>
+              </button>
             </Typography>
+           {showForgot && (
+             <form onSubmit={handleForgotPassword} className="mt-4 p-4 border rounded bg-gray-50 flex flex-col gap-3">
+               <Typography variant="h6" color="blue-gray">Reset Password</Typography>
+               <Input
+                 type="email"
+                 name="forgotEmail"
+                 value={forgotEmail}
+                 onChange={e => setForgotEmail(e.target.value)}
+                 placeholder="Enter your email"
+                 label="Email"
+                 required
+               />
+               <Input
+                 type="password"
+                 name="forgotNewPassword"
+                 value={forgotNewPassword}
+                 onChange={e => setForgotNewPassword(e.target.value)}
+                 placeholder="Enter new password"
+                 label="New Password"
+                 required
+               />
+               <Button type="submit" color="blue" disabled={forgotLoading}>
+                 {forgotLoading ? "Resetting..." : "Reset Password"}
+               </Button>
+               {forgotMessage && (
+                 <Alert color={forgotMessage.includes("successful") ? "green" : "red"}>
+                   {forgotMessage}
+                 </Alert>
+               )}
+             </form>
+           )}
           </CardBody>
         </Card>
       </div>

@@ -59,9 +59,23 @@ function decodeBase64URL(str: string): string {
 
     // Decode using atob
     const decoded = atob(base64);
-    console.log("Decoded string:", decoded);
 
-    return decoded;
+    // Convert to proper UTF-8 string to handle Vietnamese characters
+    try {
+      // Use TextDecoder for proper UTF-8 handling
+      const bytesArr: number[] = [];
+      for (let i = 0; i < decoded.length; i++) {
+        bytesArr.push(decoded.charCodeAt(i));
+      }
+      const bytes = new Uint8Array(bytesArr);
+      const utf8Decoded = new TextDecoder("utf-8").decode(bytes);
+      console.log("Decoded string:", utf8Decoded);
+      return utf8Decoded;
+    } catch {
+      // Fallback to original decoded string if UTF-8 conversion fails
+      console.log("UTF-8 conversion failed, using original:", decoded);
+      return decoded;
+    }
   } catch (error) {
     console.error("Error in base64 decode:", error);
     console.error("Input string:", str);

@@ -14,14 +14,13 @@ function Hero() {
           color="blue-gray"
           className="mx-auto w-full text-[30px] lg:text-[48px] font-bold leading-[45px] lg:leading-[60px] lg:max-w-2xl"
         >
-        Web Development Blog @ Material Tailwind
+        Blog Post Website
       </Typography>
       <Typography
           variant="lead"
-          className="mx-auto mt-8 mb-4 w-full px-8 !text-gray-700 lg:w-10/12 lg:px-12 xl:w-8/12 xl:px-20"
+          className="mx-auto mt-8 w-full px-5 !text-gray-700 lg:w-10/12 lg:px-12 xl:w-8/12 xl:px-20"
       >
-        Expand your web development knowledge with our tutorials and
-        learning articles.
+        Where your stories can shared with the world. Discover, read, and share your favorite stories.
       </Typography>
     </div>
     <div className="w-full lg:container lg:mx-auto">

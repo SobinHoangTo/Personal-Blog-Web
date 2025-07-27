@@ -15,6 +15,7 @@ import {
   getAllPosts,
   getPostsByCategory,
   getAllCategories,
+  searchPosts,
 } from "@/lib/api";
 import { Post } from "@/components/types/post";
 import { Category } from "@/components/types/category";
@@ -27,6 +28,8 @@ export default function PostList() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searching, setSearching] = useState(false);
   
   const POSTS_PER_PAGE = 9;
 
@@ -131,6 +134,36 @@ export default function PostList() {
     }
   };
 
+  // Search handler
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) {
+      // If search is cleared, reload posts by category or all
+      setSearching(false);
+      setSelectedCategoryId(null);
+      setLoading(true);
+      const data = await getAllPosts();
+      setAllPosts(data);
+      updatePagination(data, 1);
+      setLoading(false);
+      return;
+    }
+    setSearching(true);
+    setLoading(true);
+    try {
+      const data = await searchPosts(searchTerm);
+      setAllPosts(data);
+      updatePagination(data, 1);
+    } catch (err) {
+      setAllPosts([]);
+      updatePagination([], 1);
+    } finally {
+      setLoading(false);
+      setSearching(false);
+      setSelectedCategoryId(null); // Disable category filter when searching
+    }
+  };
+
   // Fetch categories once
   useEffect(() => {
     getAllCategories()
@@ -196,6 +229,41 @@ export default function PostList() {
           </TabsHeader>
         </div>
       </Tabs>
+
+      {/* Search Bar */}
+      <div className="w-full flex mb-8 flex-col items-center">
+        <form onSubmit={handleSearch} className="flex gap-2 w-full max-w-xl">
+          <input
+            type="text"
+            placeholder="Search by title or content..."
+            className="flex-1 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <Button type="submit" color="blue" disabled={searching || loading}>
+            Search
+          </Button>
+          {searchTerm && (
+            <Button
+              type="button"
+              color="gray"
+              onClick={() => {
+                setSearchTerm("");
+                setSearching(false);
+                setSelectedCategoryId(null);
+                setLoading(true);
+                getAllPosts().then(data => {
+                  setAllPosts(data);
+                  updatePagination(data, 1);
+                  setLoading(false);
+                });
+              }}
+            >
+              Clear
+            </Button>
+          )}
+        </form>
+      </div>
 
       <Typography variant="h6" className="mb-2">
         Latest Blog Posts

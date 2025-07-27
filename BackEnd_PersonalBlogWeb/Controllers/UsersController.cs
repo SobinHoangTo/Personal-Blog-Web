@@ -36,8 +36,11 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 
 			var user = await _userDao.LoginAsync(req.Username, req.Password);
 			if (user == null || user.Role == 99)
-				return Unauthorized("Wrong login information or account is blocked.");
-
+			{
+				// Display error message
+				ModelState.AddModelError(string.Empty, "Wrong login information or account is blocked.");
+				return Unauthorized(ModelState);
+			}
 
 			var role = user.Role.ToString();
 			var userId = user.Id.ToString();
@@ -233,10 +236,12 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequest req)
 		{
 			var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-			var user = await _userDao.UpdateProfileAsync(userId, req);
-			if (user == null) return NotFound("User not found or update failed");
+			var success = await _userDao.UpdateProfileAsync(userId, req);
+			if (!success) return NotFound("User not found or update failed");
 
-			return Ok(user);
+			// Return the updated user
+			var updatedUser = await _userDao.GetByIdAsync(userId);
+			return Ok(updatedUser);
 		}
 
 		[Authorize]
@@ -248,7 +253,6 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 			return success ? Ok("Password changed successfully") : BadRequest("Old password is incorrect");
 		}
 
-		[Authorize]
 		[HttpPut("forgot-password")]
 		public async Task<IActionResult> ForgotPassword([FromBody] DTO.ForgotPasswordRequest req)
 		{

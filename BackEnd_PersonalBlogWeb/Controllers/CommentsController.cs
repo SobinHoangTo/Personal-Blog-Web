@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Project_PRN232_PersonalBlogWeb.DAO;
 using Project_PRN232_PersonalBlogWeb.DTO;
-using Project_PRN232_PersonalBlogWeb.Hubs;
 using Project_PRN232_PersonalBlogWeb.Models;
 
 namespace Project_PRN232_PersonalBlogWeb.Controllers
@@ -22,15 +21,13 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 		private readonly CommentDAO _commentDao;
 		private readonly PostDAO _postDao;
 		private readonly NotificationDAO _notificationDao;
-		private readonly IHubContext<NotificationHub> _hubContext;
 
 		public CommentController(CommentDAO commentDao, PostDAO postDao,
-			NotificationDAO notificationDao, IHubContext<NotificationHub> hubContext)
+			NotificationDAO notificationDao)
 		{
 			_commentDao = commentDao;
 			_postDao = postDao;
 			_notificationDao = notificationDao;
-			_hubContext = hubContext;
 		}
 
 		// GET: api/Comment/post/5
@@ -79,23 +76,9 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 					message = $"{User.Identity!.Name} đã bình luận bài viết của bạn.";
 				}
 			}
-
-			await _hubContext.Clients.Group($"post_{dto.PostId}")
-			.SendAsync("CommentAdded", new
-			{
-				postId = dto.PostId,
-				commentId = comment.Id,
-				parentId = dto.ParentCommentId,
-				content = comment.Content,
-				author = User.Identity.Name
-			});
-
-
 			if (receiverId.HasValue && message != null)
 			{
 				await _notificationDao.CreateNotificationAsync(receiverId.Value, message);
-				await _hubContext.Clients.Group($"user_{receiverId}")
-					.SendAsync("ReceiveNotification", new { message });
 			}
 
 			return Ok(new { message = "Comment added", commentId = comment.Id });
@@ -117,13 +100,7 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 
 			if (success)
 			{
-				await _hubContext.Clients.Group($"post_{comment.PostId}")
-					.SendAsync("CommentUpdated", new
-					{
-						commentId = comment.Id,
-						action = "update",
-						newContent = dto.Content
-					});
+
 
 				return Ok(new { message = "Comment updated" });
 			}
@@ -149,12 +126,7 @@ namespace Project_PRN232_PersonalBlogWeb.Controllers
 
 			if (success)
 			{
-				await _hubContext.Clients.Group($"post_{comment.PostId}")
-					.SendAsync("CommentUpdated", new
-					{
-						commentId = comment.Id,
-						action = "delete"
-					});
+
 
 				return Ok(new { message = "Comment deleted" });
 			}

@@ -12,8 +12,25 @@ export default function JwtExpirationHandler() {
       if (!token) return;
 
       try {
-        // Parse JWT token to get expiration
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        // Validate JWT format (must have 3 parts separated by dots)
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+          throw new Error("Invalid JWT format");
+        }
+
+        // Get the payload part and fix base64 encoding
+        let base64Payload = parts[1];
+        
+        // Replace URL-safe characters
+        base64Payload = base64Payload.replace(/-/g, '+').replace(/_/g, '/');
+        
+        // Add padding if needed
+        while (base64Payload.length % 4) {
+          base64Payload += '=';
+        }
+
+        // Parse JWT payload
+        const payload = JSON.parse(atob(base64Payload));
         const currentTime = Math.floor(Date.now() / 1000);
         
         // Check if token is expired
